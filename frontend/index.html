@@ -1,0 +1,1308 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>InterconnectSentry</title>
+<style>
+:root{--bg:#f3f5f9;--pn:#fff;--p2:#eaeef5;--ln:#c9d2e0;--tx:#0f172a;--mu:#475569;--cy:#0e7490;--am:#b45309;--rd:#b91c1c;--gn:#047857;--un:#64748b;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0a0c10;--pn:#12161e;--p2:#1a202b;--ln:#272e3b;--tx:#e7ebf2;--mu:#8b95a7;--cy:#22d3ee;--am:#f59e0b;--rd:#f87171;--gn:#34d399;--un:#64748b;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0a0c10;--pn:#12161e;--p2:#1a202b;--ln:#272e3b;--tx:#e7ebf2;--mu:#8b95a7;--cy:#22d3ee;--am:#f59e0b;--rd:#f87171;--gn:#34d399;--un:#64748b;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--tx);font:14px/1.45 ui-sans-serif,system-ui,"Segoe UI",Roboto,Arial,sans-serif}
+#app{display:grid;grid-template-rows:auto 1fr;height:100%}
+header{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;padding:8px 14px;background:var(--pn);border-bottom:1px solid var(--ln)}
+.brand{display:flex;gap:8px;align-items:center;font-weight:600}.brand small{display:block;font-weight:400;color:var(--mu);font-size:11px}
+.sw{display:flex;border:1px solid var(--ln);border-radius:6px;overflow:hidden;margin-left:auto}
+.sw button{border:0;border-radius:0;padding:7px 12px;font-weight:600;letter-spacing:.02em;background:transparent}
+.sw button[aria-pressed=true]{background:var(--cy);color:var(--bg)}
+.sw button:disabled{opacity:.5;cursor:not-allowed}.sw button[data-v=live][aria-pressed=true]{background:var(--mu);color:var(--bg)}path{transition:stroke-width .15s,opacity .15s}textarea{background:var(--p2);color:var(--tx);border:1px solid var(--ln);border-radius:5px;padding:6px}
+button,select,input{font:inherit;color:var(--tx);background:var(--p2);border:1px solid var(--ln);border-radius:5px;padding:6px 10px}
+button{cursor:pointer}button:hover:not(:disabled){border-color:var(--cy)}button:disabled{opacity:.5;cursor:not-allowed}
+button.pr{background:var(--cy);color:var(--bg);border-color:var(--cy);font-weight:600}
+:focus-visible{outline:2px solid var(--cy);outline-offset:2px}
+.bd{display:inline-block;padding:1px 8px;border-radius:10px;border:1px solid currentColor;font-size:12px;font-weight:600}
+.healthy{color:var(--gn)}.suspected{color:var(--am)}.faulted,.error,.critical{color:var(--rd)}.unknown,.info{color:var(--un)}.warning{color:var(--am)}.demo{color:var(--cy)}
+.row{display:grid;grid-template-columns:188px minmax(0,1fr);min-height:0}
+nav{background:var(--pn);border-right:1px solid var(--ln);padding:8px;display:flex;flex-direction:column;gap:2px;overflow:auto}
+nav button{text-align:left;border-color:transparent;background:transparent;color:var(--mu)}
+nav button[aria-current=page]{background:var(--p2);color:var(--tx);border-color:var(--ln);box-shadow:inset 3px 0 var(--cy)}
+main{padding:16px;overflow:auto;min-width:0}
+h1{font-size:20px;margin:0 0 4px}h2{font-size:14px;margin:0 0 8px}p{margin:4px 0}.mu{color:var(--mu)}
+.g{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));margin-top:12px}
+.pn{background:var(--pn);border:1px solid var(--ln);border-radius:6px;padding:12px;min-width:0}
+.kp{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.k{background:var(--pn);border:1px solid var(--ln);border-radius:6px;padding:10px}.k b{display:block;font-size:22px;font-variant-numeric:tabular-nums}.k span{color:var(--mu)}.k i{display:block;font-size:11px;color:var(--mu);font-style:normal}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:5px 8px;border-bottom:1px solid var(--ln);text-align:left;white-space:nowrap}th{color:var(--mu);font-weight:600}
+tbody tr[data-e]{cursor:pointer}tbody tr[data-e]:hover,tr.on{background:var(--p2)}
+.sc{overflow-x:auto}.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0}
+.warn{border-left:3px solid var(--am);padding:8px 10px;background:var(--p2);margin:8px 0}.err{color:var(--rd)}
+svg{max-width:100%;height:auto}.lk,.nd{cursor:pointer}.lk:focus-visible,.nd:focus-visible{outline:none}.lk:focus-visible path,.nd:focus-visible rect{stroke:var(--cy)}
+text{fill:var(--tx);font-size:12px}.ax text{fill:var(--mu);font-size:10px}
+#toast{position:fixed;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));background:var(--pn);border:1px solid var(--cy);border-radius:6px;padding:8px 12px;max-width:80vw}
+#toast:empty{display:none}
+.mono{font-family:ui-monospace,Menlo,Consolas,monospace}.lg span{margin-right:12px}.lg i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px}
+@media(max-width:800px){.row{grid-template-columns:1fr;grid-template-rows:auto 1fr}nav{flex-direction:row;border-right:0;border-bottom:1px solid var(--ln)}nav button{white-space:nowrap}.sw{margin-left:0}}
+.spat{position:relative;margin-top:12px}.stage,.fp,.gp{--tx:#e2e8f0;--mu:#a8b4c8;--p2:rgba(255,255,255,.09);--ln:rgba(148,163,184,.32);--pn:rgba(10,16,30,.85);--cy:#22d3ee;--gn:#34d399;--am:#f59e0b;--rd:#f87171;--un:#7c8aa0;color:var(--tx)}
+.stage{position:relative;height:clamp(440px,calc(100vh - 200px),720px);border:1px solid var(--ln);border-radius:8px;overflow:hidden;background:radial-gradient(ellipse at 50% 40%,#13203a,#070d1a 70%)}
+.stage svg#tv{width:100%;height:100%}.tb{position:absolute;top:8px;left:8px;right:8px;z-index:2;display:flex;flex-wrap:wrap;gap:6px;align-items:center;background:rgba(10,16,30,.7);backdrop-filter:blur(8px);border:1px solid var(--ln);border-radius:8px;padding:6px}.tb button[aria-pressed=true]{border-color:var(--cy)}
+.fp{position:absolute;top:64px;width:292px;max-height:calc(100% - 76px);overflow:auto;z-index:2;background:rgba(10,16,30,.74);backdrop-filter:blur(10px);border:1px solid var(--ln);border-radius:8px;padding:10px}.fl{left:10px}.fr{right:10px}
+.l3{position:absolute;transform:translate(-50%,-100%);font:11px ui-sans-serif,system-ui,sans-serif;color:#e2e8f0;background:rgba(7,13,26,.72);padding:1px 5px;border-radius:3px;white-space:nowrap}
+@media(max-width:1000px){.fp{position:static;width:auto;max-height:none;margin-top:10px}.stage{height:440px}}
+.gp{background:rgba(10,16,30,.82);border:1px solid var(--ln);border-radius:8px;padding:10px;min-width:0;overflow:auto}.gp h2{letter-spacing:.02em}.gp button[aria-pressed=true],.tb button[aria-pressed=true]{border-color:var(--cy);color:var(--cy)}
+.ws{display:grid;gap:10px;grid-template-columns:264px minmax(0,1fr) 292px;margin-top:12px;align-items:start}.ws .stage{height:clamp(400px,calc(100vh - 420px),640px)}.ws>.gp{max-height:clamp(400px,calc(100vh - 420px),640px)}
+.mt{position:absolute;inset:56px 8px 8px;overflow:auto}.mt svg{height:auto}
+.dock{display:grid;gap:10px;grid-template-columns:repeat(5,minmax(0,1fr));margin-top:10px}.dock .gp{max-height:300px;font-size:13px}
+@media(max-width:1250px){.dock{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:1100px){.ws{grid-template-columns:1fr}.ws .cen{order:-1}.ws>.gp{max-height:none}.dock{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:640px){.dock{grid-template-columns:1fr}}
+main{padding:10px 12px}nav button{display:flex;align-items:center;gap:10px}nav button[aria-current=page]{background:rgba(34,211,238,.12);border-color:var(--cy)}
+.ws{height:clamp(440px,calc(100vh - 322px),780px);align-items:stretch;margin-top:0}.ws>.gp,.ws .stage{height:100%;max-height:none}.ws>.gp{overflow:auto}
+.gp{border-color:rgba(34,211,238,.22)}.sec{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--mu);margin:12px 0 6px}
+.pg{display:grid;grid-template-columns:1fr 1fr;gap:6px}.pg button[aria-pressed=true]{border-color:var(--cy);background:rgba(34,211,238,.14);color:var(--cy)}
+.stp{display:flex;gap:4px;margin-top:4px}.stp input{width:100%;text-align:center}.lbl{display:block;color:var(--mu)}
+.cc{position:absolute;right:12px;bottom:12px;z-index:2;display:flex;flex-direction:column;gap:6px}.cc button{width:34px;height:34px;padding:0;background:rgba(10,16,30,.85)}
+.fld{border:1px solid var(--ln);border-radius:6px;padding:3px 10px;font-weight:600;min-width:110px}.fld small{display:block;color:var(--mu);font-weight:400;font-size:10px}.fld select{border:0;background:transparent;padding:0;font-weight:600;max-width:170px}
+.dock .gp{height:214px;max-height:214px}.l3.nl{font:700 13px ui-sans-serif,system-ui,sans-serif;background:none;color:#e8fff6;text-shadow:0 0 6px #22d3ee,0 0 2px #000}.l3.ll{font-size:10px;background:none;color:#9fd6ff;text-shadow:0 0 4px #000}
+@media(max-width:1100px){.ws{height:auto}.ws>.gp,.ws .stage{height:auto}.ws .stage{height:460px}}
+@media print{nav,header button{display:none}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}</style></head><body>
+<div id="app"><header id="hd"></header><div class="row"><nav id="nv" aria-label="Primary"></nav><main id="view" tabindex="-1"></main></div></div>
+<div id="toast" role="status" aria-live="polite"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+"use strict";
+const $=(s,e=document)=>e.querySelector(s),esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const rng=seed=>{let a=seed>>>0;return()=>{a=(a+0x6d2b79f5)>>>0;let t=a;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}};
+const hx=x=>"0x"+(x>>>0).toString(16).padStart(8,"0"),COL={healthy:"gn",suspected:"am",faulted:"rd",unknown:"un"};
+const MAXN=16,NAMES="ABCDEFGHIJKLMNOP";
+let NET={n:4,preset:"full",tpi:10,lat:4,bw:64},EP=[],LK=[];
+function layout(ids,pr){const n=ids.length,cx=400,cy=280,r=Math.min(210,Math.max(120,n*22)),an=i=>2*Math.PI*i/n-Math.PI/2;
+if(pr=="mesh"){const c=Math.ceil(Math.sqrt(n)),rw=Math.ceil(n/c),gx=Math.min(190,600/Math.max(1,c-1)),gy=Math.min(150,400/Math.max(1,rw-1));return ids.map((id,i)=>({id,x:cx+((i%c)-(c-1)/2)*gx,y:cy+(Math.floor(i/c)-(rw-1)/2)*gy}))}
+if(pr=="star")return ids.map((id,i)=>{const a=2*Math.PI*(i-1)/Math.max(1,n-1)-Math.PI/2;return i?{id,x:cx+r*Math.cos(a),y:cy+r*Math.sin(a)}:{id,x:cx,y:cy}});
+return ids.map((id,i)=>({id,x:cx+r*Math.cos(an(i)),y:cy+r*Math.sin(an(i))}))}
+function pairs(n,pr){const o=[];if(pr=="ring")for(let i=0;i<n;i++)o.push([i,(i+1)%n]);if(pr=="star")for(let i=1;i<n;i++)o.push([0,i]);
+if(pr=="full")for(let i=0;i<n;i++)for(let j=i+1;j<n;j++)o.push([i,j]);
+if(pr=="mesh"){const c=Math.ceil(Math.sqrt(n));for(let i=0;i<n;i++){if(i%c<c-1&&i+1<n)o.push([i,i+1]);if(i+c<n)o.push([i,i+c])}}return o}
+function build(n,pr){NET.n=n;NET.preset=pr;const ids=[...NAMES].slice(0,n);EP=layout(ids,pr).map(e=>({...e,nm:"Chiplet "+e.id}));LK=pairs(n,pr).map(([a,b],i)=>({id:"L"+(i+1),s:ids[a],d:ids[b],lat:NET.lat,bw:NET.bw}))}
+build(4,"full");
+function netChanged(m){S.exps=[];S.cmp.clear();S.sel=S.selN=S.ev=null;S.rep=null;runSim(SC[0]);toast(m);render()}
+function applyNet(){const n=parseInt($("#cn").value),pr=$("#cp").value;if(!(n>=2&&n<=MAXN))return toast("Chiplet count must be a whole number from 2 to "+MAXN+".");
+if(pr=="full"&&n>8)return toast("Fully connected is limited to 8 chiplets (28 links).");NET.tpi=+$("#ct").value;NET.lat=Math.max(1,Math.min(32,parseInt($("#cl").value)||4));NET.bw=+$("#cw").value;build(n,pr);
+netChanged("Network rebuilt: "+n+" chiplets, "+LK.length+" links ("+pr+"). Run history was cleared because link IDs changed.")}
+function addLink(){const a=$("#as").value,b=$("#ad").value;if(a==b)return toast("Choose two different chiplets.");if(LK.some(l=>l.s==a&&l.d==b))return toast("That directed link already exists.");if(LK.length>=120)return toast("Link limit is 120.");
+const id="L"+(Math.max(0,...LK.map(l=>+l.id.slice(1)))+1);LK.push({id,s:a,d:b,lat:NET.lat,bw:NET.bw});NET.preset="custom";netChanged("Link "+id+" added ("+a+" to "+b+"). Run history was cleared because the topology changed.")}
+function rmLink(){const id=S.sel;if(!id)return;if(LK.length<=1)return toast("At least one link is required.");LK=LK.filter(l=>l.id!=id);NET.preset="custom";netChanged("Link "+id+" removed. Run history was cleared because the topology changed.")}
+function rename(){const q=EP.find(x=>x.id==S.selN),v=$("#rn").value.trim();if(!q||!v||v.length>24)return toast("Name must be 1â€“24 characters.");q.nm=v;render()}
+const SC=[
+{id:"healthy",name:"Healthy Baseline",seed:101,desc:"No fault injected.",faults:[]},
+{id:"bit",name:"Bit Corruption",seed:202,desc:"Bits 3 and 17 flipped on L3 (intervals 4â€“17).",faults:[{link:"L3",type:"bit",bits:[3,17],start:4,dur:14}]},
+{id:"delay",name:"Transfer Delay",seed:303,desc:"+14 cycles on L1 (intervals 2â€“17).",faults:[{link:"L1",type:"delay",delay:14,start:2,dur:16}]},
+{id:"drop",name:"Dropped Transfer",seed:404,desc:"Every 7th transfer on L5 dropped.",faults:[{link:"L5",type:"drop",every:7,start:0,dur:20}]},
+{id:"inter",name:"Intermittent Link Fault",seed:505,desc:"Corruption bursts on L2 (intervals 3â€“5 and 11â€“13).",faults:[{link:"L2",type:"bit",bits:[0],start:3,dur:3},{link:"L2",type:"bit",bits:[0],start:11,dur:3}]},
+{id:"multi",name:"Multiple Faults",seed:606,desc:"Delay on L1 plus drops on L4.",faults:[{link:"L1",type:"delay",delay:9,start:5,dur:12},{link:"L4",type:"drop",every:5,start:3,dur:14}]}];
+let S={mode:"demo",page:"overview",exps:[],cur:null,sel:null,selN:null,ev:null,cmp:new Set(),rep:null,running:null,vb:{x:0,y:0,w:800,h:560},q:"",sf:"",v3:true,vt:"3d",it:"chiplet",dc:null,pl:true,pr:true,src:null,sj:"",se:[],pend:null,f:{q:"",sev:"",typ:"",lnk:""},live:{target:"fastapi",url:"http://127.0.0.1:8000/api/v1",state:"idle",msg:"",last:null},hardwareStatus:null,hardwareBusy:false,backendTopology:null,backendExperiments:[],backendSelected:null,backendEvents:[],backendBusy:false,fe:[]};
+const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+/* ---- deterministic simulation (abstract model; no RTL, no hardware) ---- */
+function sim(sc){const R=rng(sc.seed),ev=[],L={};let n_=0;
+LK.forEach(l=>{const m={tr:0,er:0,dr:0,ex:0,sum:0,rc:0,mx:0,lat:[],an:[],rcv:[]};
+for(let i=0;i<20;i++){let ls=0,a=0,rc=0;
+for(let k=0;k<NET.tpi;k++){const n=i*NET.tpi+k,exp=Math.floor(R()*4294967296);let lat=l.lat+Math.floor(R()*3),t=null,sv="",ob=null,dp=0;
+const f=sc.faults.find(f=>f.link==l.id&&i>=f.start&&i<f.start+f.dur);
+if(f){if(f.type=="bit"&&R()<.6){ob=(exp^f.bits.reduce((x,b)=>x|(1<<b),0))>>>0;t="data_mismatch";sv="error";m.er++}
+else if(f.type=="delay"){lat+=f.delay;if(lat>l.lat+4){t=lat>32?"protocol_violation":"latency_excursion";sv=lat>32?"critical":"warning";m.ex++}}
+else if(f.type=="drop"&&(n+1)%f.every==0){dp=1;t="dropped_transfer";sv="error";m.dr++}}
+m.tr++;if(!dp){m.sum+=lat;m.rc++;rc++;ls+=lat;m.mx=Math.max(m.mx,lat)}
+if(t){a++;ev.push({cyc:n*8,link:l.id,type:t,sev:sv,exp:hx(exp),obs:ob==null?"â€”":hx(ob),lat:dp?null:lat})}}
+m.lat.push(+(ls/Math.max(1,rc)).toFixed(2));m.an.push(a);m.rcv.push(rc)}
+m.avg=m.rc?+(m.sum/m.rc).toFixed(2):null;const an=m.er+m.dr+m.ex;m.an_=an;m.st=an==0?"healthy":an/m.tr>.1?"faulted":"suspected";L[l.id]=m});
+ev.sort((a,b)=>a.cyc-b.cyc||(a.link<b.link?-1:1));return{L,ev}}
+function runSim(sc){sc={...sc,faults:sc.faults.map(f=>({...f,link:LK[(parseInt(f.link.slice(1))-1)%LK.length].id}))};const r=sim(sc),id="DEMO-"+String(S.exps.length+1).padStart(3,"0");r.ev.forEach((e,i)=>{e.id=id+"-EV"+String(i+1).padStart(3,"0");e.xid=id});
+const V=Object.values(r.L),T=k=>V.reduce((a,m)=>a+m[k],0);
+const e={id,name:sc.name,sc,seed:sc.seed,source:"DEMO SIMULATION",net:{n:NET.n,preset:NET.preset,links:LK.length,tpi:NET.tpi,lat:NET.lat},at:new Date().toISOString(),L:r.L,ev:r.ev,plan:[],
+tot:{tr:T("tr"),er:T("er"),dr:T("dr"),ex:T("ex"),avg:+(T("sum")/T("rc")).toFixed(2),mx:Math.max(...V.map(m=>m.mx)),bad:V.filter(m=>m.st!="healthy").length}};
+S.exps.push(e);S.cur=id;return e}
+const cur=()=>S.exps.find(e=>e.id==S.cur);
+function run(sc){if(S.running)return;S.running=sc.name;render();setTimeout(()=>{const e=runSim(sc);S.running=null;S.sel=null;S.ev=null;toast("Simulated run "+e.id+" complete: "+sc.name);render()},reduce?0:700)}
+function toast(m){$("#toast").textContent=m;clearTimeout(toast.t);toast.t=setTimeout(()=>$("#toast").textContent="",4500)}
+/* ---- adaptive planner: documented heuristic, NOT a calibrated probability ---- */
+const TESTS=()=>[{id:"T-SWEEP",name:"Full-fabric sweep",L:LK.map(l=>l.id)},...EP.map(p=>({id:"T-EP-"+p.id,name:"Endpoint fan-out: Chiplet "+p.id,L:LK.filter(l=>l.s==p.id||l.d==p.id).map(l=>l.id)})),...LK.map(l=>({id:"T-"+l.id,name:"Link probe: "+l.id,L:[l.id]}))];
+function susp(e){const a=LK.map(l=>e.L[l.id].an_),tot=a.reduce((x,y)=>x+y,0);if(!tot)return null;
+let w=a.map(x=>x+.5);e.plan.forEach(p=>{const t=TESTS().find(t=>t.id==p.id);w=w.map((v,i)=>v*(t.L.includes(LK[i].id)?(p.fail?4:.1):(p.fail?1:1)));});const s=w.reduce((x,y)=>x+y,0);return w.map(v=>v/s)}
+function cand(e,s){return TESTS().filter(t=>!e.plan.some(p=>p.id==t.id)).map(t=>{const m=t.L.reduce((a,id)=>a+s[LK.findIndex(l=>l.id==id)],0);return{...t,m,sc:m*(1-m)/(1+.1*t.L.length)}}).sort((a,b)=>b.sc-a.sc||(a.id<b.id?-1:1))}
+/* ---- charts ---- */
+function chart(labels,series,y,x,bar){const W=560,H=190,m={l:44,r:8,t:8,b:36},n=labels.length,mx=Math.max(1,...series.flatMap(s=>s.v)),iw=W-m.l-m.r,ih=H-m.t-m.b,Y=v=>m.t+ih-v/mx*ih;
+let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(y)} by ${esc(x)}"><g class="ax">`;
+for(let i=0;i<=4;i++){const v=mx*i/4;s+=`<line x1="${m.l}" x2="${W-m.r}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--ln)"/><text x="${m.l-4}" y="${Y(v)+3}" text-anchor="end">${+v.toFixed(1)}</text>`}
+const step=Math.ceil(n/10);labels.forEach((l,i)=>{if(i%step==0){const cx=bar?m.l+(i+.5)*iw/n:m.l+i*iw/Math.max(1,n-1);s+=`<text x="${cx}" y="${H-20}" text-anchor="middle">${esc(l)}</text>`}});
+s+=`<text x="${m.l+iw/2}" y="${H-5}" text-anchor="middle">${esc(x)}</text><text transform="translate(10 ${m.t+ih/2}) rotate(-90)" text-anchor="middle">${esc(y)}</text></g>`;
+series.forEach((se,j)=>{const c=`var(--${se.c})`;if(bar){const bw=iw/n/(series.length+1);se.v.forEach((v,i)=>{s+=`<rect x="${m.l+i*iw/n+bw*(j+.5)}" y="${Y(v)}" width="${bw}" height="${ih-(Y(v)-m.t)}" fill="${c}"><title>${esc(se.name)}, ${esc(labels[i])}: ${v}</title></rect>`})}
+else{s+=`<polyline fill="none" stroke="${c}" stroke-width="2" points="${se.v.map((v,i)=>`${m.l+i*iw/Math.max(1,n-1)},${Y(v)}`).join(" ")}"/>`+se.v.map((v,i)=>`<circle cx="${m.l+i*iw/Math.max(1,n-1)}" cy="${Y(v)}" r="3" fill="${c}"><title>${esc(se.name)}, ${esc(x)} ${esc(labels[i])}: ${v}</title></circle>`).join("")}});
+return s+`</svg><div class="lg mu">${series.map(se=>`<span><i style="background:var(--${se.c})"></i>${esc(se.name)}</span>`).join("")}</div>`}
+const IV=[...Array(20).keys()].map(i=>i+1);
+/* ---- topology ---- */
+const sz=n=>n<=6?[100,60]:n<=10?[76,56]:n<=16?[54,38]:[34,24];
+function ept(a,b,w,h){const dx=b.x-a.x,dy=b.y-a.y,k=Math.min(dx?w/2/Math.abs(dx):1e9,dy?h/2/Math.abs(dy):1e9);return{x:a.x+dx*k,y:a.y+dy*k}}
+function topo(e,full,net){net=net||{EP,LK};const[w0,h0]=sz(net.EP.length),w=net.w||w0,h=net.h||h0,ST=net.st||(id=>e?e.L[id].st:"unknown"),AN=net.an||(id=>e?e.L[id].an_:0),AV=net.avg||(id=>e?e.L[id].avg:4),demo=net.demo!==false&&S.mode=="demo",P=id=>net.EP.find(p=>p.id==id),q=full?S.q.toLowerCase():"",sf=full?S.sf:"",sn=full?S.selN:null,ss=full?S.sel:null,vb=full?`${S.vb.x} ${S.vb.y} ${S.vb.w} ${S.vb.h}`:"0 0 800 560",show=net.LK.length<=16;
+let s=`<svg id="tv" viewBox="${vb}" role="group" aria-label="Chiplet topology, ${net.EP.length} endpoints and ${net.LK.length} directed links"><defs><marker id="ar" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L8 4L0 8z" fill="context-stroke"/></marker></defs>`;
+net.LK.forEach(l=>{const a=P(l.s),b=P(l.d),A=ept(a,b,w,h),B=ept(b,a,w,h),c=`var(--${COL[ST(l.id)]})`,on=ss==l.id||(sn&&(sn==l.s||sn==l.d)),hit=!q||(l.id+l.s+l.d).toLowerCase().includes(q),dim=((sn||ss)&&!on)||!hit||(sf&&ST(l.id)!=sf),rev=net.LK.some(m=>m.s==l.d&&m.d==l.s),nx=-(B.y-A.y),ny=B.x-A.x,nl=Math.hypot(nx,ny)||1,ox=rev?nx/nl*6:0,oy=rev?ny/nl*6:0,d=`M${A.x+ox} ${A.y+oy}L${B.x+ox} ${B.y+oy}`,t=.3+(+l.id.replace(/\D/g,"")%3)*.2,an=AN(l.id);
+s+=`<g class="lk" tabindex="0" role="button" data-l="${esc(l.id)}" aria-label="Link ${esc(l.id)} ${esc(l.s)} to ${esc(l.d)}, ${ST(l.id)}" opacity="${dim?.25:1}"><path d="${d}" stroke="transparent" stroke-width="14" fill="none"/><path d="${d}" stroke="${c}" stroke-width="${on?4.5:2}" fill="none" marker-end="url(#ar)"/>`;
+if(demo&&e&&!reduce&&net.LK.length<=40)s+=`<circle r="3" fill="${c}"><animateMotion dur="${(1.4+AV(l.id)/5).toFixed(1)}s" repeatCount="indefinite" path="${d}"/></circle>`;
+if(show||on){const lx=A.x+ox+(B.x-A.x)*t,ly=A.y+oy+(B.y-A.y)*t;s+=`<rect x="${lx-22}" y="${ly-9}" width="44" height="18" rx="3" fill="var(--pn)" stroke="${c}"/><text x="${lx}" y="${ly+4}" text-anchor="middle">${esc(l.id)}${an?" âš "+an:""}</text>`}s+="</g>"});
+net.EP.forEach(p=>{const ls=net.LK.filter(l=>l.s==p.id||l.d==p.id).map(l=>ST(l.id)),ws=ls.includes("faulted")?"faulted":ls.includes("suspected")?"suspected":ls.includes("healthy")?"healthy":"unknown",on=sn==p.id,dim=(sn&&!on&&!net.LK.some(l=>(l.s==sn&&l.d==p.id)||(l.d==sn&&l.s==p.id)))||(q&&!(p.id+(p.nm||"")).toLowerCase().includes(q));
+s+=`<g class="nd" tabindex="0" role="button" data-n="${esc(p.id)}" aria-label="Chiplet ${esc(p.nm||p.id)}, ${ws}" opacity="${dim?.3:1}"><rect x="${p.x-w/2}" y="${p.y-h/2}" width="${w}" height="${h}" rx="5" fill="var(--p2)" stroke="${on?"var(--cy)":"var(--ln)"}" stroke-width="2"/><circle cx="${p.x+w/2-6}" cy="${p.y-h/2+6}" r="3.5" fill="var(--${COL[ws]})"/><text x="${p.x}" y="${p.y+(w>=76?-2:4)}" text-anchor="middle" font-weight="600">${w>=76?"EP-":""}${esc(p.id)}</text>${w>=76?`<text x="${p.x}" y="${p.y+16}" text-anchor="middle" class="mu" style="fill:var(--mu)">${esc((p.nm||"").slice(0,12))}</text>`:""}</g>`});
+return s+"</svg>"}
+const legend=`<div class="lg mu"><span class="healthy"><i style="background:currentColor"></i>healthy</span><span class="suspected"><i style="background:currentColor"></i>suspected (&lt;10% anomaly rate)</span><span class="faulted"><i style="background:currentColor"></i>faulted</span><span class="unknown"><i style="background:currentColor"></i>no data</span><span>â†’ direction; pulses = simulated traffic</span></div>`;
+function nodeDetail(e){const p=EP.find(x=>x.id==S.selN);if(!p)return"<p class=mu>Select a chiplet in the network view.</p>";const ls=LK.filter(l=>l.s==p.id||l.d==p.id),tr=ls.reduce((a,l)=>a+e.L[l.id].tr,0),an=ls.reduce((a,l)=>a+e.L[l.id].an_,0),av=ls.length?(ls.reduce((a,l)=>a+e.L[l.id].avg,0)/ls.length).toFixed(1):"unavailable",t=pos3(p),ws=ls.some(l=>e.L[l.id].st=="faulted")?"faulted":ls.some(l=>e.L[l.id].st=="suspected")?"suspected":"healthy";
+return`<h2>${esc(p.nm)} (${p.id}) <span class="bd ${ws}">${ws}</span></h2><table><tr><th>ID</th><td>${p.id}</td></tr><tr><th>Position (model)</th><td>${t.x.toFixed(0)}, ${t.y.toFixed(0)}, ${t.z.toFixed(0)}</td></tr><tr><th>Connections</th><td>${ls.length} links (${ls.filter(l=>l.s==p.id).length} out, ${ls.filter(l=>l.d==p.id).length} in)</td></tr><tr><th>Transfers (total)</th><td>${tr}</td></tr><tr><th>Anomalies</th><td>${an}</td></tr><tr><th>Avg latency</th><td>${av} cycles (simulated)</td></tr></table><div class="bar"><input id="rn" value="${esc(p.nm)}" aria-label="Chiplet name" size="12"><button data-a="ren">Rename</button></div><h2 class="sec">Neighbors</h2>${ls.map(l=>`<p><button data-a="sl" data-v="${l.id}">${l.s==p.id?l.d:l.s} Â· <span class="${e.L[l.id].st}">${e.L[l.id].st}</span> Â· ${l.bw}-bit Â· ${l.lat} cyc base</button></p>`).join("")}`}
+function linkDetail(e){const l=LK.find(x=>x.id==S.sel);if(!l)return"<p class=mu>Select a link in the network view.</p>";const m=e.L[l.id],nm=id=>esc((EP.find(p=>p.id==id)||{nm:id}).nm);
+return`<h2>${l.id}: ${nm(l.s)} â†’ ${nm(l.d)} <span class="bd ${m.st}">${m.st}</span></h2><table><tr><th>Configured</th><td>${l.bw}-bit, base latency ${l.lat} cycles, directed</td></tr><tr><th>Configured fault</th><td>${e.sc.faults.filter(f=>f.link==l.id).map(f=>f.type=="bit"?"bit corruption":f.type=="delay"?"delay +"+f.delay+" cycles":"drop every "+f.every).join("; ")||"none injected"}</td></tr><tr><th>Detected anomalies</th><td>${m.er+m.dr+m.ex}</td></tr><tr><th>Transfers</th><td>${m.tr}</td></tr><tr><th>Mismatches / dropped</th><td>${m.er} / ${m.dr}</td></tr><tr><th>Avg / max latency</th><td>${m.avg} / ${m.mx} cycles (simulated)</td></tr></table><p class=mu>Evidence: ${e.ev.filter(x=>x.link==l.id).slice(0,3).map(x=>`<button data-a="ev" data-v="${x.id}">${x.id}</button>`).join(" ")||"none in this run"}</p><div class="bar"><button data-a="go" data-v="fault">Target in Fault Injection</button><button data-a="rml">Remove link</button></div>`}
+function detail(e){return`<h2 class="sec">Chiplet details</h2>${nodeDetail(e)}<h2 class="sec">Link details</h2>${linkDetail(e)}`}
+/* ---- pages ---- */
+const PG=[["overview","Overview"],["topology","Interconnect Topology"],["fault","Fault Injection"],["diag","Live Diagnostics"],["plan","Adaptive Test Planner"],["exp","Experiments & Benchmarks"],["rep","Reports"],["set","Connections & Settings"]];
+const kp=(l,v,s)=>`<div class="k"><b>${v}</b><span>${l}</span><i>${s}</i></div>`,sim_="<span class=\"bd demo\">SIMULATED</span>";
+const head=(t,d)=>`<h1>${t} ${S.mode=="demo"?sim_:'<span class="bd unknown">NOT CONNECTED</span>'}</h1><p class="mu">${d}</p>`;
+function live(page){
+if(page=="exp")return backendExperimentsPage();
+if(page=="plan")return pFpgaPlan();
+if(page=="fault"&&S.live.target==="fpga")return pFpgaFaultInjection();
+if(page=="diag"&&S.live.target==="fpga")return pFpgaDiagnostics();
+if(S.backendTopology&&page=="topology"){
+const t=S.backendTopology;
+const selectedRun=S.backendExperiments.find(x=>String(x.id)===String(S.backendSelected));
+const runComplete=!!selectedRun&&selectedRun.status==="completed";
+const events=runComplete?(S.backendEvents||[]):[];
+const linkHealth=id=>{
+const ev=events.filter(x=>String(x.linkId)===String(id));
+const delay=ev.filter(x=>x.type==="latency_sample").length;
+const corruption=ev.filter(x=>x.type==="data_mismatch").length;
+const drops=ev.filter(x=>x.type==="dropped_transfer").length;
+const protocol=ev.filter(x=>x.type==="protocol_violation").length;
+const count=delay+corruption+drops+protocol;
+const outcome=selectedRun&&selectedRun.outcome?selectedRun.outcome:{};
+const traffic=Number((outcome.transfersByLink||{})[id]||0);
+const status=(corruption+drops+protocol)>0?"faulted":
+delay>0?"suspected":
+traffic>0?"healthy":"unknown";
+return {status,count,delay,corruption,drops,protocol,traffic};
+};
+const net={
+EP:t.endpoints.map(p=>({id:p.id,x:Number(p.x)||0,y:Number(p.y)||0,nm:p.name||p.id})),
+LK:t.links.map(l=>({id:l.id,s:l.source,d:l.destination})),
+st:id=>linkHealth(id).status,
+an:id=>linkHealth(id).count,
+avg:id=>{const q=events.filter(x=>String(x.linkId)===String(id)&&x.latencyCycles!=null);return q.length?q.reduce((a,x)=>a+Number(x.latencyCycles),0)/q.length:null},
+demo:false
+};
+const graph=topo(null,false,net);
+return `<h1>Backend Interconnect Topology <span class="bd healthy">BACKEND CONNECTED</span></h1>
+<p class="mu">Link health is derived from the selected backend software simulation experiment. This is simulation data, not physical FPGA telemetry.</p>
+<div class="kp" style="margin-top:12px">
+${kp("Endpoints",t.endpoints.length,"backend data")}
+${kp("Directed links",t.links.length,"backend data")}
+${kp("Selected run",runComplete?"Completed":"Not loaded",runComplete?"backend simulation":"run an experiment first")}
+</div>
+<div class="pn" style="margin-top:12px">
+${graph}
+${legend}
+</div>
+<div class="pn sc" style="margin-top:12px">
+<h2>Backend link configuration</h2>
+<table><tr><th>Link</th><th>Source</th><th>Destination</th><th>Width</th><th>Clock</th><th>Health</th><th>Events</th><th>Delay</th><th>Corruption</th><th>Drops</th><th>Protocol</th></tr>
+${t.links.map(l=>{const h=linkHealth(l.id);return `<tr><td>${esc(l.id)}</td><td>${esc(l.source)}</td><td>${esc(l.destination)}</td><td>${l.widthBits??"unavailable"} bits</td><td>${l.clockMHz??"unavailable"} MHz</td><td class="${h.status}">${h.status==="unknown"?"No data":h.status.toUpperCase()}</td><td>${h.count}</td><td>${h.delay}</td><td>${h.corruption}</td><td>${h.drops}</td><td>${h.protocol}</td></tr>`}).join("")}
+</table></div>
+<div class="pn" style="margin-top:12px">
+<h2>Topology Presets</h2>
+<p class="mu">Choose a topology to generate and save it to FastAPI.</p>
+<div class="bar">
+<button data-a="backendPreset" data-v="ring">Ring</button>
+<button data-a="backendPreset" data-v="star">Star</button>
+<button data-a="backendPreset" data-v="mesh">Mesh</button>
+<button data-a="backendPreset" data-v="full">Fully Connected</button>
+</div>
+<h2>Edit Backend Topology</h2>
+<p class="mu">Edit the JSON below. Changes are sent to FastAPI only when you click Save to Backend.</p>
+<textarea id="backendTopologyEditor" spellcheck="false" style="width:100%;min-height:300px;box-sizing:border-box;font-family:monospace;white-space:pre;resize:vertical">${esc(JSON.stringify(t,null,2))}</textarea>
+<div class="bar" style="margin-top:10px">
+<button class="pr" data-a="saveTopology">Save to Backend</button>
+</div>
+<p class="mu">The backend validates endpoint IDs, link IDs and link references before saving.</p>
+</div>`;
+}
+if(S.src&&["overview","topology","diag"].includes(page))return liveSrc(page);const msgs={overview:"Health, throughput and latency summaries",topology:"The live topology",fault:"Fault injection",diag:"Diagnostic events",plan:"Adaptive planning evidence",exp:"Experiment history and benchmarks",rep:"Reports"};
+const extra=page=="fault"?"<p class=\"warn\">Fault injection is disabled: no connected source has declared support for it, and no command is ever sent to an unsupported target.</p>":page=="exp"||page=="rep"?`<p class="mu">${S.exps.length} Demo Lab record(s) are hidden in this mode; hardware and demo records are never mixed.</p>`:"";
+return head(PG.find(p=>p[0]==page)[1],"Hardware / Live Data")+`<div class="pn" style="margin-top:12px"><h2>SOURCE UNAVAILABLE</h2><p>${msgs[page]} will appear here only when a supported hardware or simulator source is connected and supplies real values.</p><p class="mu">No supported hardware or simulator source is connected. Configure an endpoint and connect a compatible backend to receive real measurements. Nothing on this page is simulated.</p>${extra}<button class="pr" data-a="go" data-v="set">Configure connection</button></div>`}
+
+/* ---- Physical FPGA Fault Injection ---- */
+function pFpgaFaultInjection(){
+ const connected=S.live.state==="connected"&&S.live.target==="fpga";
+ const H=S.hardwareStatus;
+ const busy=S.hardwareBusy;
+ const state=H?.status||"Not read";
+ const faultType=H?.fault_detected===true?"DETECTED":H?.fault_detected===false?"NOT DETECTED":"UNKNOWN";
+ const localized=H?.localized===true?"YES":H?.localized===false?"NO":"UNKNOWN";
+ const evidence=H?.evidence_valid===true?"VALID":H?.evidence_valid===false?"NOT VALID":"UNKNOWN";
+ return head("FPGA Fault Injection","Configure and inject a fault into the physical PYNQ-Z2 through the XSDB hardware bridge.")+
+ `<div class="kp" style="margin-top:12px">
+ ${kp("Connection",connected?"CONNECTED":"DISCONNECTED","PYNQ-Z2")}
+ ${kp("Hardware state",esc(state),"FPGA status")}
+ ${kp("Fault detection",faultType,"hardware reported")}
+ ${kp("Localization",localized,"hardware reported")}
+ </div>
+ <div class="pn" style="margin-top:12px">
+ <h2>Physical fault configuration</h2>
+ <p class="mu">These settings are sent to the FPGA. They are not software simulation parameters.</p>
+ <div class="bar">
+ <label>Workload / transfers <input id="hwWorkload" type="number" min="1" max="65535" value="100"></label>
+ <label>Target link <input id="hwTarget" type="number" min="0" max="15" value="0"></label>
+ </div>
+ <div class="bar">
+ <label>Fault type <select id="hwFaultType">
+ <option value="0">No fault (baseline)</option>
+ <option value="1">Data corruption</option>
+ <option value="2">Transfer delay</option>
+ <option value="3">Dropped transfer</option>
+ </select></label>
+ <label><input id="hwFaultEnable" type="checkbox"> Enable fault injection</label>
+ </div>
+ <div class="bar">
+ <label>Fault mask (hex) <input id="hwFaultMask" value="0x00000001" size="14"></label>
+ <label>Delay cycles <input id="hwDelay" type="number" min="0" max="255" value="10"></label>
+ <label>Drop interval <input id="hwDrop" type="number" min="0" max="255" value="5"></label>
+ </div>
+ <p class="mu">For a baseline, select No fault and leave injection disabled. For corruption, enable injection and use a non-zero mask. For delay, set delay cycles. For drop, set a non-zero drop interval.</p>
+ <p class="warn">The current RTL build uses MONITORED_LINK=0. The target field does not change that synthesized RTL parameter.</p>
+ <div class="bar">
+ <button class="pr" data-a="fpgaStart" ${!connected||busy?"disabled":""}>Apply Configuration &amp; Start FPGA</button>
+ <button data-a="fpgaStop" ${!connected||busy?"disabled":""}>Stop FPGA</button>
+ <button data-a="fpgaStatus" ${!connected||busy?"disabled":""}>Refresh Status</button>
+ </div>
+ <p class="err" role="alert">${esc(S.live.msg||"")}</p>
+ </div>
+ <div class="pn" style="margin-top:12px">
+ <h2>Hardware-reported result</h2>
+ ${H?`<table>
+ <tr><th>Device</th><td>${esc(H.device||"PYNQ-Z2")}</td></tr>
+ <tr><th>State</th><td>${esc(H.status||"Unavailable")}</td></tr>
+ <tr><th>Raw status</th><td class="mono">${esc(H.raw||"Unavailable")}</td></tr>
+ <tr><th>Transfer counter</th><td>${H.transfers??"Unavailable"}</td></tr>
+ <tr><th>Fault detected</th><td>${H.fault_detected===true?"Yes":H.fault_detected===false?"No":"Unavailable"}</td></tr>
+ <tr><th>Localized</th><td>${H.localized===true?"Yes":H.localized===false?"No":"Unavailable"}</td></tr>
+ <tr><th>Evidence valid</th><td>${H.evidence_valid===true?"Yes":H.evidence_valid===false?"No":"Unavailable"}</td></tr>
+ <tr><th>Last status read</th><td>${esc(H.timestamp||"Unavailable")}</td></tr>
+ </table>`:`<p class="mu">No hardware status has been read yet. Connect to the PYNQ-Z2 and refresh status.</p>`}
+ <p class="mu">The transfer counter is the hardware-reported counter; it may be cumulative. Detection, localization and evidence are displayed only when reported by the FPGA.</p>
+ </div>`;
+}
+/* ---- Physical FPGA Live Diagnostics ---- */
+function pFpgaDiagnostics(){
+ const connected=S.live.state==="connected"&&S.live.target==="fpga";
+ const h=S.hardwareStatus;
+ const history=readFpgaBenchHistory().slice(0,12);
+ const faultNames=["No fault","Corruption","Delay","Drop"];
+ const flag=v=>v===true?"YES":v===false?"NO":"UNAVAILABLE";
+ const state=h?.status||"Not read";
+ const stateClass=String(state).toUpperCase()==="DONE"?"healthy":
+  String(state).toUpperCase()==="ERROR"?"faulted":"unknown";
+
+ return `<h1>Live Diagnostics <span class="bd ${connected?"healthy":"unknown"}">PYNQ-Z2 HARDWARE</span></h1>
+ <p class="mu">Physical FPGA diagnostics from the hardware status register and saved experiment history. Values are not simulated.</p>
+
+ <div class="bar" style="margin-top:12px">
+  <button class="pr" data-a="fpgaStatus" ${!connected||S.hardwareBusy?"disabled":""}>${S.hardwareBusy?"Reading FPGA...":"Refresh Hardware Status"}</button>
+  <span class="mu">${connected?"Connected to PYNQ-Z2": "Connect to PYNQ-Z2 to read live status"}</span>
+ </div>
+
+ ${S.live.msg?`<p class="warn">${esc(S.live.msg)}</p>`:""}
+
+ <div class="kp" style="margin-top:12px">
+  <div class="k"><b>${esc(state)}</b><span>Hardware state</span><i>${h?"FPGA-reported":"Awaiting status read"}</i></div>
+  <div class="k"><b>${h?.transfers??"—"}</b><span>Transfer counter</span><i>Hardware register</i></div>
+  <div class="k"><b>${h?flag(h.fault_detected):"—"}</b><span>Fault detected</span><i>Hardware flag</i></div>
+  <div class="k"><b>${h?flag(h.localized):"—"}</b><span>Localized</span><i>Hardware flag</i></div>
+ </div>
+
+ <div class="g" style="margin-top:12px">
+  <div class="pn">
+   <h2>FPGA status register</h2>
+   ${h?`<table>
+    <tr><th>Device</th><td>${esc(h.device||"PYNQ-Z2")}</td></tr>
+    <tr><th>Execution state</th><td><b class="${stateClass}">${esc(state)}</b></td></tr>
+    <tr><th>Raw status</th><td class="mono">${esc(h.raw??"unavailable")}</td></tr>
+    <tr><th>Transfer counter</th><td>${h.transfers??"unavailable"}</td></tr>
+    <tr><th>Fault detected</th><td>${flag(h.fault_detected)}</td></tr>
+    <tr><th>Localized</th><td>${flag(h.localized)}</td></tr>
+    <tr><th>Evidence valid</th><td>${flag(h.evidence_valid)}</td></tr>
+    <tr><th>Last hardware read</th><td>${esc(h.timestamp||"unavailable")}</td></tr>
+   </table>`:`<p class="mu">No FPGA status has been read in this session. Connect to the board and refresh.</p>`}
+  </div>
+
+  <div class="pn">
+   <h2>Diagnostic interpretation</h2>
+   ${h?`<p><b>Fault detection:</b> ${h.fault_detected===true?"The FPGA reports a detected fault.":h.fault_detected===false?"No fault is currently reported.":"The hardware did not provide this flag."}</p>
+   <p><b>Localization:</b> ${h.localized===true?"The FPGA reports localization success.":h.localized===false?"No localization is reported.":"Unavailable."}</p>
+   <p><b>Evidence:</b> ${h.evidence_valid===true?"The FPGA reports valid evidence.":h.evidence_valid===false?"No valid evidence is reported.":"Unavailable."}</p>`:`<p class="mu">Diagnostics will appear after the first successful hardware status read.</p>`}
+   <p class="mu">These are aggregate hardware flags. The current status interface does not expose packet-level events or a localized link ID.</p>
+  </div>
+ </div>
+
+ <div class="pn" style="margin-top:12px">
+  <h2>Recent physical FPGA experiments (${history.length})</h2>
+  ${history.length?`<div class="sc"><table>
+   <tr><th>Experiment</th><th>Fault type</th><th>State</th><th>Transfers this run</th><th>Detected</th><th>Localized</th><th>Evidence</th><th>Time</th></tr>
+   ${history.map(r=>`<tr>
+    <td>${esc(r.name||"Unnamed")}</td>
+    <td>${faultNames[Number(r.config?.fault_type)]||"Unknown"}</td>
+    <td>${esc(r.status?.status||"Unknown")}</td>
+    <td>${r.transfers_this_run??"unavailable"}</td>
+    <td>${flag(r.status?.fault_detected)}</td>
+    <td>${flag(r.status?.localized)}</td>
+    <td>${flag(r.status?.evidence_valid)}</td>
+    <td>${esc(r.timestamp||"unavailable")}</td>
+   </tr>`).join("")}
+  </table></div>`:`<p class="mu">No completed physical FPGA experiments have been saved yet. Run tests from Experiments & Benchmarks to build diagnostic history.</p>`}
+  <p class="mu">Experiment history is stored locally in this browser. The current hardware status is refreshed separately from the history.</p>
+ </div>`;
+}
+/* ---- FPGA Adaptive Test Planner: physical hardware only ---- */
+const FPGA_PLAN_TESTS=[
+ {key:"healthy-baseline",label:"Healthy baseline",type:0,enable:false,mask:"0x00000000",delay:0,drop:0,reason:"Check that healthy traffic produces no false positives."},
+ {key:"corruption",label:"Corruption detection",type:1,enable:true,mask:"0x00000001",delay:0,drop:0,reason:"Verify corruption detection and evidence reporting."},
+ {key:"delay",label:"Delay detection",type:2,enable:true,mask:"0x00000000",delay:10,drop:0,reason:"Verify delayed-transfer detection."},
+ {key:"drop",label:"Drop detection",type:3,enable:true,mask:"0x00000000",delay:0,drop:5,reason:"Verify dropped-transfer detection."}
+];
+
+function pFpgaPlan(){
+ const history=readFpgaBenchHistory().filter(r=>
+  String(r.name||"").startsWith("Adaptive Planner: ")
+ );
+ const completed=FPGA_PLAN_TESTS.filter(t=>
+  history.some(r=>r.name==="Adaptive Planner: "+t.key)
+ );
+ const next=FPGA_PLAN_TESTS.find(t=>!completed.some(x=>x.key===t.key));
+ const connected=S.live.state==="connected"&&S.live.target==="fpga";
+ const latest=history.slice(0,8);
+
+ return `<h1>Adaptive Test Planner <span class="bd ${connected?"healthy":"unknown"}">FPGA HARDWARE</span></h1>
+ <p class="mu">Hardware-backed validation sequence. Recommendations use recorded PYNQ-Z2 results, not simulated link-suspicion scores.</p>
+ <div class="kp" style="margin-top:12px">
+  <div class="k"><b>${completed.length}/${FPGA_PLAN_TESTS.length}</b><span>Tests completed</span><i>physical FPGA runs</i></div>
+  <div class="k"><b>${history.length}</b><span>Planner records</span><i>saved locally</i></div>
+  <div class="k"><b>${connected?"Connected":"Disconnected"}</b><span>Hardware</span><i>PYNQ-Z2</i></div>
+ </div>
+ <div class="pn" style="margin-top:12px">
+  <h2>Next recommended test</h2>
+  ${next?`<h3>${next.label}</h3><p>${next.reason}</p>
+  <p class="mu">Workload: 100 transfers · Target setting: 0 · Test profile: ${next.key}</p>
+  <button class="pr" data-a="fpgaPlanRun" data-v="${next.key}" ${!connected||S.hardwareBusy?"disabled":""}>Run recommended FPGA test</button>`
+  :`<h3>Validation sequence completed</h3><p>All four test profiles have recorded results. Review the history below before starting another validation cycle.</p>`}
+  ${!connected?`<p class="warn">Connect the PYNQ-Z2 under Connections & Settings before running hardware tests.</p>`:""}
+  ${S.hardwareBusy?`<p class="mu">An FPGA operation is currently running.</p>`:""}
+ </div>
+ <div class="pn" style="margin-top:12px">
+  <h2>Validation sequence</h2>
+  <table><thead><tr><th>Test</th><th>Purpose</th><th>Result</th></tr></thead><tbody>
+  ${FPGA_PLAN_TESTS.map(t=>{
+   const r=history.find(x=>x.name==="Adaptive Planner: "+t.key);
+   return `<tr><td>${t.label}</td><td>${t.reason}</td><td>${r?`<span class="${r.status?.fault_detected?"faulted":"healthy"}">${r.status?.status||"Recorded"} · ${r.status?.fault_detected?"Fault detected":"No fault detected"}</span>`:"<span class=unknown>Pending</span>"}</td></tr>`;
+  }).join("")}
+  </tbody></table>
+ </div>
+ <div class="pn" style="margin-top:12px">
+  <h2>Recent FPGA planner results</h2>
+  ${latest.length?`<div class="sc"><table><thead><tr><th>Test</th><th>State</th><th>Detected</th><th>Localized</th><th>Evidence</th><th>Transfers</th></tr></thead><tbody>
+  ${latest.map(r=>`<tr><td>${esc(String(r.name).replace("Adaptive Planner: ",""))}</td><td>${esc(r.status?.status||"Unavailable")}</td><td>${r.status?.fault_detected===true?"Yes":r.status?.fault_detected===false?"No":"Unavailable"}</td><td>${r.status?.localized===true?"Yes":r.status?.localized===false?"No":"Unavailable"}</td><td>${r.status?.evidence_valid===true?"Yes":r.status?.evidence_valid===false?"No":"Unavailable"}</td><td>${r.transfers_this_run??"Unavailable"}</td></tr>`).join("")}
+  </tbody></table></div>`:`<p class="mu">No FPGA planner tests have been run yet.</p>`}
+ </div>
+ <p class="mu">Important: the current hardware status interface reports aggregate detection, localization and evidence flags. It does not expose a verified individual link ID. These results validate hardware behavior, not link-by-link diagnosis.</p>
+ <div style="display:none" aria-hidden="true">
+  <input id="fbName"><input id="fbWorkload" value="100">
+  <input id="fbTarget" value="0"><input id="fbFaultType" value="0">
+  <input id="fbFaultEnable" type="checkbox">
+  <input id="fbMask" value="0x00000000">
+  <input id="fbDelay" value="0"><input id="fbDrop" value="0">
+ </div>`;
+}
+
+function runFpgaPlannerTest(key){
+ const t=FPGA_PLAN_TESTS.find(x=>x.key===key);
+ if(!t)return toast("Unknown FPGA planner test.");
+ if(S.live.state!=="connected"||S.live.target!=="fpga")
+  return toast("Connect to the PYNQ-Z2 target first.");
+ if(S.hardwareBusy)return;
+
+ const set=(id,value)=>{
+  const el=document.getElementById(id);
+  if(el)el.value=String(value);
+ };
+ set("fbName","Adaptive Planner: "+t.key);
+ set("fbWorkload",100);
+ set("fbTarget",0);
+ set("fbFaultType",t.type);
+ set("fbMask",t.mask);
+ set("fbDelay",t.delay);
+ set("fbDrop",t.drop);
+
+ const enable=document.getElementById("fbFaultEnable");
+ if(enable)enable.checked=t.enable;
+
+ return runFpgaBenchExperiment();
+}
+/* ---- FastAPI backend experiments: separate from Demo Lab ---- */
+function backendExperimentsPage(){
+const history=readFpgaBenchHistory();
+const connected=S.live.state==="connected"&&S.live.target==="fpga";
+const compare=readFpgaBenchCompare();
+const a=history.find(x=>String(x.id)===String(compare[0]));
+const b=history.find(x=>String(x.id)===String(compare[1]));
+const faultName=t=>({0:"No fault",1:"Corruption",2:"Delay",3:"Drop"}[t]||"Unknown");
+const options=history.map(x=>`<option value="${esc(String(x.id))}">${esc(x.name)} â€” ${esc(x.timestamp)}</option>`).join("");
+const comparison=a&&b&&a.id!==b.id?`
+<div class="pn">
+<h2>Hardware Run Comparison</h2>
+<table>
+<tr><th>Measurement</th><th>${esc(a.name)}</th><th>${esc(b.name)}</th></tr>
+<tr><th>Fault configuration</th><td>${esc(faultName(a.config.fault_type))}</td><td>${esc(faultName(b.config.fault_type))}</td></tr>
+<tr><th>Hardware state</th><td>${esc(a.status.status)}</td><td>${esc(b.status.status)}</td></tr>
+<tr><th>Transfers this run</th><td>${a.transfers_this_run}</td><td>${b.transfers_this_run}</td></tr>
+<tr><th>Fault detected</th><td>${a.status.fault_detected?"Yes":"No"}</td><td>${b.status.fault_detected?"Yes":"No"}</td></tr>
+<tr><th>Localized</th><td>${a.status.localized?"Yes":"No"}</td><td>${b.status.localized?"Yes":"No"}</td></tr>
+<tr><th>Evidence valid</th><td>${a.status.evidence_valid?"Yes":"No"}</td><td>${b.status.evidence_valid?"Yes":"No"}</td></tr>
+<tr><th>Raw hardware status</th><td class="mono">${esc(a.status.raw||"â€”")}</td><td class="mono">${esc(b.status.raw||"â€”")}</td></tr>
+</table>
+<p class="mu">Transfer counts are calculated from the hardware counter before and after each run.</p>
+</div>`:"";
+
+return head("Experiment Bench","Physical FPGA experiments and hardware-reported results.")+
+`<div class="g">
+<div class="pn">
+<h2>PYNQ-Z2 Hardware Experiment</h2>
+<p class="mu">These experiments execute on the connected FPGA. They are separate from Demo Lab simulations and backend software experiments.</p>
+<p><span class="bd ${connected?"healthy":"unknown"}">${connected?"FPGA CONNECTED":"FPGA NOT CONNECTED"}</span></p>
+${!connected?`<p class="mu">Select the FPGA target and connect in Connections & Settings before running a hardware experiment.</p>`:""}
+<div class="bar"><label>Experiment name
+<input id="fbName" value="FPGA Hardware Test" maxlength="64"></label></div>
+<div class="bar"><label>Workload / transfers
+<input id="fbWorkload" type="number" min="1" max="65535" value="100"></label>
+<label>Target link
+<input id="fbTarget" type="number" min="0" max="15" value="0"></label></div>
+<div class="bar"><label>Fault type
+<select id="fbFaultType">
+<option value="0">No fault</option>
+<option value="1">Corruption</option>
+<option value="2">Delay</option>
+<option value="3">Drop</option>
+</select></label>
+<label><input id="fbFaultEnable" type="checkbox"> Enable fault injection</label></div>
+<div class="bar"><label>Fault mask
+<input id="fbMask" value="0x00000001"></label>
+<label>Delay cycles
+<input id="fbDelay" type="number" min="0" max="255" value="10"></label>
+<label>Drop interval
+<input id="fbDrop" type="number" min="0" max="255" value="5"></label></div>
+<div class="bar">
+<button class="pr" data-a="runFpgaBench" ${!connected||S.hardwareBusy?"disabled":""}>${S.hardwareBusy?"Running FPGA experiment...":"Run FPGA Experiment"}</button>
+<button data-a="fpgaStatus" ${!connected||S.hardwareBusy?"disabled":""}>Refresh Hardware Status</button>
+</div>
+${S.hardwareBusy?`<p class="mu">Waiting for the FPGA workload to finish. The result will be saved only after hardware reports DONE.</p>`:""}
+</div>
+<div class="pn">
+<h2>Latest Hardware Status</h2>
+${S.hardwareStatus?`<table>
+<tr><th>Device</th><td>${esc(S.hardwareStatus.device||"PYNQ-Z2")}</td></tr>
+<tr><th>State</th><td><b>${esc(S.hardwareStatus.status||"Unknown")}</b></td></tr>
+<tr><th>Raw status</th><td class="mono">${esc(S.hardwareStatus.raw||"unavailable")}</td></tr>
+<tr><th>Transfers counter</th><td>${S.hardwareStatus.transfers??"unavailable"}</td></tr>
+<tr><th>Fault detected</th><td>${S.hardwareStatus.fault_detected===true?"Yes":S.hardwareStatus.fault_detected===false?"No":"Unavailable"}</td></tr>
+<tr><th>Localized</th><td>${S.hardwareStatus.localized===true?"Yes":S.hardwareStatus.localized===false?"No":"Unavailable"}</td></tr>
+<tr><th>Evidence valid</th><td>${S.hardwareStatus.evidence_valid===true?"Yes":S.hardwareStatus.evidence_valid===false?"No":"Unavailable"}</td></tr>
+<tr><th>Last read</th><td>${esc(S.hardwareStatus.timestamp||"unavailable")}</td></tr>
+</table>`:`<p class="mu">No hardware status loaded yet.</p>`}
+</div>
+</div>
+<div class="pn">
+<div class="bar">
+<h2>Physical FPGA Experiment History (${history.length})</h2>
+<button data-a="exportFpgaBenchCsv" ${!history.length?"disabled":""}>Export CSV</button>
+<button data-a="exportFpgaBenchJson" ${!history.length?"disabled":""}>Export JSON</button>
+</div>
+${history.length?`<table>
+<tr><th>Experiment</th><th>Fault</th><th>State</th><th>Transfers this run</th><th>Detected</th><th>Localized</th><th>Evidence</th><th>Time</th></tr>
+${history.map(x=>`<tr>
+<td>${esc(x.name)}</td>
+<td>${esc(faultName(x.config.fault_type))}</td>
+<td>${esc(x.status.status)}</td>
+<td>${x.transfers_this_run}</td>
+<td>${x.status.fault_detected?"Yes":"No"}</td>
+<td>${x.status.localized?"Yes":"No"}</td>
+<td>${x.status.evidence_valid?"Yes":"No"}</td>
+<td>${esc(x.timestamp)}</td>
+</tr>`).join("")}
+</table>`:`<p class="mu">No completed hardware experiments saved yet. Run an experiment above to create the first record.</p>`}
+<p class="mu">History is stored locally in this browser. Only completed FPGA runs are recorded.</p>
+</div>
+<div class="pn">
+<h2>Compare Hardware Experiments</h2>
+${history.length>=2?`
+<div class="bar">
+<label>First run <select id="fbCompareA">${options}</select></label>
+<label>Second run <select id="fbCompareB">${options}</select></label>
+<button data-a="compareFpgaBench">Compare</button>
+</div>
+${comparison}`:`<p class="mu">Complete at least two hardware experiments to compare their results.</p>`}
+</div>`;
+}
+async function backendApi(path,options={}){
+const base=S.live.url.replace(/\/+$/,"");
+const response=await fetch(base+path,{
+...options,
+credentials:"omit",
+headers:{"Content-Type":"application/json",...(options.headers||{})}
+});
+let data;
+try{data=await response.json()}catch(_){data=null}
+if(!response.ok){
+const detail=data&&data.detail;
+throw new Error(typeof detail==="string"?detail:"HTTP "+response.status);
+}
+return data;
+}
+const FPGA_BENCH_KEY="interconnectsentry.fpgaBenchHistory.v1";
+const FPGA_BENCH_COMPARE_KEY="interconnectsentry.fpgaBenchCompare.v1";
+
+function readFpgaBenchHistory(){
+try{
+const value=JSON.parse(localStorage.getItem(FPGA_BENCH_KEY)||"[]");
+return Array.isArray(value)?value:[];
+}catch(_){return[]}
+}
+function readFpgaBenchCompare(){
+try{
+const value=JSON.parse(localStorage.getItem(FPGA_BENCH_COMPARE_KEY)||"[]");
+return Array.isArray(value)?value:["",""];
+}catch(_){return["",""]}
+}
+async function runFpgaBenchExperiment(){
+if(S.live.state!=="connected"||S.live.target!=="fpga"){
+return toast("Connect to the PYNQ-Z2 target first.");
+}
+if(S.hardwareBusy)return;
+
+const value=id=>document.getElementById(id)?.value;
+const name=(value("fbName")||"").trim();
+const workload=Number(value("fbWorkload"));
+const target=Number(value("fbTarget"));
+const faultType=Number(value("fbFaultType"));
+const faultEnable=!!document.getElementById("fbFaultEnable")?.checked;
+const mask=Number.parseInt((value("fbMask")||"").trim(),0);
+const delay=Number(value("fbDelay"));
+const drop=Number(value("fbDrop"));
+
+if(!name||!Number.isInteger(workload)||workload<1||workload>65535||
+!Number.isInteger(target)||target<0||target>15||
+!Number.isInteger(faultType)||faultType<0||faultType>3||
+!Number.isInteger(mask)||mask<0||mask>0xFFFFFFFF||
+!Number.isInteger(delay)||delay<0||delay>255||
+!Number.isInteger(drop)||drop<0||drop>255){
+return toast("Check the experiment name and hardware configuration values.");
+}
+
+const config={
+workload,
+target_link:target,
+fault_type:faultType,
+fault_enable:faultEnable,
+fault_mask:mask,
+delay_cycles:delay,
+drop_interval:drop
+};
+
+S.hardwareBusy=true;
+render();
+
+try{
+const before=await backendApi("/hardware/status");
+const baseline=Number(before.transfers)||0;
+
+await backendApi("/hardware/start",{
+method:"POST",
+body:JSON.stringify(config)
+});
+
+const deadline=Date.now()+120000;
+let finalStatus=null;
+let sawRunning=false;
+
+while(Date.now()<deadline){
+await new Promise(resolve=>setTimeout(resolve,350));
+const current=await backendApi("/hardware/status");
+S.hardwareStatus=current;
+const state=String(current.status||"").toUpperCase();
+
+if(state==="RUNNING")sawRunning=true;
+if(state==="ERROR")throw new Error("FPGA reported ERROR: "+(current.raw||"unknown status"));
+
+const currentTransfers=Number(current.transfers)||0;
+if(state==="DONE"&&(sawRunning||currentTransfers>baseline)){
+finalStatus=current;
+break;
+}
+}
+
+if(!finalStatus){
+throw new Error("Timed out waiting for FPGA completion. Refresh hardware status and check the board.");
+}
+
+const record={
+id:Date.now(),
+name,
+timestamp:finalStatus.timestamp||new Date().toISOString(),
+config,
+baseline_transfers:baseline,
+transfers_this_run:Math.max(0,(Number(finalStatus.transfers)||0)-baseline),
+status:{
+device:finalStatus.device||"PYNQ-Z2",
+status:finalStatus.status,
+raw:finalStatus.raw,
+transfers:finalStatus.transfers,
+fault_detected:finalStatus.fault_detected===true,
+localized:finalStatus.localized===true,
+evidence_valid:finalStatus.evidence_valid===true,
+timestamp:finalStatus.timestamp||new Date().toISOString()
+}
+};
+
+const history=readFpgaBenchHistory();
+history.unshift(record);
+localStorage.setItem(FPGA_BENCH_KEY,JSON.stringify(history));
+toast("FPGA experiment completed and saved: "+name);
+}catch(x){
+toast("FPGA experiment failed: "+(x&&x.message||"unknown error"));
+}finally{
+S.hardwareBusy=false;
+render();
+}
+}
+function compareFpgaBench(){
+const a=document.getElementById("fbCompareA")?.value||"";
+const b=document.getElementById("fbCompareB")?.value||"";
+if(!a||!b||a===b)return toast("Select two different hardware experiments.");
+localStorage.setItem(FPGA_BENCH_COMPARE_KEY,JSON.stringify([a,b]));
+render();
+}
+async function exportFpgaBench(format){
+const history=readFpgaBenchHistory();
+if(!history.length)return toast("No hardware experiments to export.");
+if(format==="json"){
+return save("interconnectsentry-fpga-experiments.json",JSON.stringify(history,null,2));
+}
+const quote=value=>'"'+String(value??"").replace(/"/g,'""')+'"';
+const columns=["name","timestamp","fault_type","fault_enable","target_link","workload","transfers_this_run","hardware_state","raw_status","fault_detected","localized","evidence_valid"];
+const rows=history.map(x=>[
+x.name,x.timestamp,x.config.fault_type,x.config.fault_enable,x.config.target_link,
+x.config.workload,x.transfers_this_run,x.status.status,x.status.raw,
+x.status.fault_detected,x.status.localized,x.status.evidence_valid
+]);
+const csv=[columns.join(","),...rows.map(row=>row.map(quote).join(","))].join("\n");
+return save("interconnectsentry-fpga-experiments.csv",csv);
+}
+async function loadBackendExperiments(){
+if(S.live.state!=="connected")return toast("Connect to the backend first.");
+if(S.backendBusy)return;
+S.backendBusy=true;render();
+try{
+S.backendExperiments=await backendApi("/experiments");
+if(!Array.isArray(S.backendExperiments))throw new Error("Unexpected experiment history response");
+if(!S.backendExperiments.some(x=>x.id===S.backendSelected))S.backendSelected=null;
+toast("Loaded "+S.backendExperiments.length+" backend experiment(s).");
+}catch(x){toast("History load failed: "+x.message)}
+finally{S.backendBusy=false;render()}
+}
+async function createBackendExperiment(){
+if(S.live.state!=="connected"||S.backendBusy)return;
+const name=$("#beName")?.value.trim();
+const faultRows=[...document.querySelectorAll(".beFaultForLink")];
+const faults=faultRows.map(el=>({
+targetLinkId:el.dataset.link,
+type:el.value
+}));
+const seed=Number($("#beSeed")?.value);
+const transferCount=Number($("#beTransfers")?.value);
+const testDurationCycles=Number($("#beCycles")?.value);
+if(!name||!faults.length||faults.some(f=>!f.targetLinkId||!f.type)||!Number.isInteger(seed)||seed<0||seed>4294967295||
+!Number.isInteger(transferCount)||transferCount<1||transferCount>10000||
+!Number.isInteger(testDurationCycles)||testDurationCycles<1||testDurationCycles>1000000){
+return toast("Check the experiment name, target link, seed, transfer count and duration.");
+}
+S.backendBusy=true;render();
+try{
+const record=await backendApi("/experiments",{
+method:"POST",
+body:JSON.stringify({
+name,faults,seed,transferCount,testDurationCycles
+})
+});
+S.backendSelected=record.id;
+S.backendEvents=[];
+S.backendExperiments=await backendApi("/experiments");
+toast("Backend experiment created: "+record.id);
+}catch(x){toast("Experiment creation failed: "+x.message)}
+finally{S.backendBusy=false;render()}
+}
+async function runBackendExperiment(){
+const id=S.backendSelected;
+if(!id||S.backendBusy)return;
+S.backendBusy=true;render();
+try{
+const record=await backendApi("/experiments/"+encodeURIComponent(id)+"/run",{method:"POST"});
+S.backendSelected=record.id;
+S.backendExperiments=await backendApi("/experiments");
+S.backendEvents=await backendApi("/experiments/"+encodeURIComponent(id)+"/events");
+toast("Backend run finished: "+record.status);
+}catch(x){toast("Backend run failed: "+x.message)}
+finally{S.backendBusy=false;render()}
+}
+async function cancelBackendExperiment(){
+const id=S.backendSelected;
+if(!id||S.backendBusy)return;
+S.backendBusy=true;render();
+try{
+const record=await backendApi("/experiments/"+encodeURIComponent(id)+"/cancel",{method:"POST"});
+S.backendExperiments=await backendApi("/experiments");
+S.backendSelected=record.id;
+toast("Backend experiment status: "+record.status);
+}catch(x){toast("Cancel failed: "+x.message)}
+finally{S.backendBusy=false;render()}
+}
+async function loadBackendEvents(id=S.backendSelected){
+if(!id||S.backendBusy)return;
+S.backendBusy=true;render();
+try{
+S.backendEvents=await backendApi("/experiments/"+encodeURIComponent(id)+"/events");
+S.backendSelected=id;
+toast("Loaded "+S.backendEvents.length+" backend event(s).");
+}catch(x){toast("Event load failed: "+x.message)}
+finally{S.backendBusy=false;render()}
+}
+function pOverview(e){const dm=S.exps;return head("Overview","Engineering command center for the active Demo Lab run.")+`<div class="kp" style="margin-top:12px">${kp("Experiments run",dm.length,"simulated")}${kp("Chiplets / links",EP.length+" / "+LK.length,NET.preset+" topology")}${kp("Anomalies detected",e.tot.er+e.tot.dr+e.tot.ex,"current run")}${kp("Links faulted / suspected",e.tot.bad,"of "+LK.length)}${kp("Avg latency",e.tot.avg,"cycles, simulated")}</div>
+<div class="g"><div class="pn"><h2>Topology: ${esc(e.name)} (${e.id})</h2>${topo(e,false)}${legend}<button data-a="go" data-v="topology">Open topology</button></div>
+<div class="pn"><h2>Throughput (received transfers, all links)</h2>${chart(IV,[{name:"received",c:"cy",v:IV.map((_,i)=>LK.reduce((a,l)=>a+e.L[l.id].rcv[i],0))}],"transfers / interval","Interval",false)}</div>
+<div class="pn"><h2>Recent diagnostic events</h2>${e.ev.slice(0,5).map(x=>`<p><span class="bd ${x.sev}">${x.sev}</span> ${x.id} ${x.link} ${x.type}</p>`).join("")||"<p class=mu>No anomalies in this run.</p>"}<button data-a="go" data-v="diag">Open diagnostics</button></div>
+<div class="pn"><h2>Next actions</h2><p>Run a faulty scenario, then ask the planner where to look next.</p><div class="bar"><button class="pr" data-a="go" data-v="fault">Run a scenario</button><button data-a="go" data-v="plan">Open planner</button><button data-a="go" data-v="topology">Configure network</button></div><h2>Recent runs</h2>${dm.slice(-4).reverse().map(x=>`<p>${x.id} ${esc(x.name)} <span class="mu">${x.tot.er+x.tot.dr+x.tot.ex} anomalies</span></p>`).join("")}</div></div>`}
+/* ---- spatial (WebGL) view: renders the same EP/LK/run data as the 2D SVG; 2D is the fallback ---- */
+const V3={ok:undefined,on:false,run:false,cur:{},nodes:{},links:{},pulses:[],labs:[],hover:null,th:.6,ph:1.1,r:300,tx:0,ty:0,tz:0,e:null,net:null},SC3={healthy:0x34d399,suspected:0xf59e0b,faulted:0xf87171,unknown:0x64748b};
+const pos3=p=>({x:(p.x-400)/3.2,y:(([...p.id].reduce((a,c)=>a+c.charCodeAt(0),0)*7)%5-2)*12,z:(p.y-280)/3.2});
+V3.fit=function(){const net=V3.net||{EP,LK};let R=40;net.EP.forEach(p=>{const t=pos3(p);R=Math.max(R,Math.hypot(t.x,t.y,t.z))});V3.r=R*2.4+90;V3.tx=V3.ty=V3.tz=0;V3.th=.78;V3.ph=1.0};
+V3.zoom=f=>{V3.r=Math.max(40,Math.min(1500,V3.r/f))};
+function init3d(){if(V3.ok!==undefined)return;V3.ok=false;try{if(!window.THREE)throw new Error("Three.js could not be loaded");const w=document.createElement("div");w.style.cssText="position:absolute;inset:0";const c=document.createElement("canvas");c.tabIndex=0;c.setAttribute("aria-label","3D chiplet network. Drag to orbit, shift-drag to pan, wheel or plus/minus to zoom, F to fit, Escape to clear selection.");c.style.cssText="width:100%;height:100%;display:block;touch-action:none;cursor:grab";
+const l=document.createElement("div");l.style.cssText="position:absolute;inset:0;pointer-events:none;overflow:hidden";w.append(c,l);const r=new THREE.WebGLRenderer({canvas:c,antialias:true,alpha:true});r.setPixelRatio(Math.min(2,devicePixelRatio||1));
+const sc=new THREE.Scene();sc.add(new THREE.AmbientLight(0xffffff,.6));const dl=new THREE.DirectionalLight(0xffffff,.9);dl.position.set(120,200,160);sc.add(dl);const gr=new THREE.GridHelper(640,32,0x2b4a6b,0x172338);gr.position.y=-60;sc.add(gr);for(let i=0;i<34;i++){const a=i*2.399,rr=150+((i*53)%9)*28,h=6+((i*37)%7)*5,b=new THREE.Mesh(new THREE.BoxGeometry(26,h,26),new THREE.MeshStandardMaterial({color:0x0c1a31,roughness:.8}));b.position.set(Math.cos(a)*rr,-60+h/2,Math.sin(a)*rr);b.add(new THREE.LineSegments(new THREE.EdgesGeometry(b.geometry),new THREE.LineBasicMaterial({color:0x1b3556})));sc.add(b)}
+const g=new THREE.Group();sc.add(g);Object.assign(V3,{ok:true,w,c,l,rd:r,sc,g,cam:new THREE.PerspectiveCamera(45,1,1,4000),ray:new THREE.Raycaster(),m:new THREE.Vector2()});V3.fit();bind3d()}catch(x){V3.ok=false;V3.err=x.message}}
+function bind3d(){const c=V3.c;let d=null;const hit=e=>{const b=c.getBoundingClientRect();V3.m.set((e.clientX-b.left)/b.width*2-1,-((e.clientY-b.top)/b.height)*2+1);V3.ray.setFromCamera(V3.m,V3.cam);return V3.ray.intersectObjects(V3.g.children,true).map(h=>h.object.userData).find(u=>u.n||u.l)};
+c.addEventListener("pointerdown",e=>{d={x:e.clientX,y:e.clientY,sx:e.clientX,sy:e.clientY,pan:e.shiftKey||e.button==2};c.setPointerCapture(e.pointerId);c.style.cursor="grabbing"});
+c.addEventListener("pointermove",e=>{if(d){const dx=e.clientX-d.x,dy=e.clientY-d.y;d.x=e.clientX;d.y=e.clientY;if(d.pan){V3.cam.updateMatrix();const k=V3.r/700,rt=new THREE.Vector3().setFromMatrixColumn(V3.cam.matrix,0),up=new THREE.Vector3().setFromMatrixColumn(V3.cam.matrix,1);V3.tx+=(-rt.x*dx+up.x*dy)*k;V3.ty+=(-rt.y*dx+up.y*dy)*k;V3.tz+=(-rt.z*dx+up.z*dy)*k}else{V3.th-=dx*.006;V3.ph=Math.max(.15,Math.min(Math.PI-.15,V3.ph-dy*.006))}return}
+const u=hit(e),k=u?(u.n?"n"+u.n:"l"+u.l):null;if(k!==V3.hover){V3.hover=k;c.style.cursor=k?"pointer":"grab";c.title=u?(u.n?"Chiplet "+u.n:"Link "+u.l):"";hl3()}});
+c.addEventListener("pointerup",e=>{c.style.cursor="grab";if(d&&Math.hypot(e.clientX-d.sx,e.clientY-d.sy)<4){const u=hit(e);selectObj(u);d=null;render();return}d=null});
+c.addEventListener("wheel",e=>{e.preventDefault();V3.zoom(e.deltaY<0?1.12:.89)},{passive:false});c.addEventListener("contextmenu",e=>e.preventDefault());
+c.addEventListener("keydown",e=>{const k=e.key;if(k=="ArrowLeft")V3.th-=.1;else if(k=="ArrowRight")V3.th+=.1;else if(k=="ArrowUp")V3.ph=Math.max(.15,V3.ph-.1);else if(k=="ArrowDown")V3.ph=Math.min(Math.PI-.15,V3.ph+.1);else if(k=="+"||k=="=")V3.zoom(1.15);else if(k=="-")V3.zoom(.87);else if(k=="f"||k=="F")V3.fit();else if(k=="Escape"){S.sel=S.selN=null;render()}else return;e.preventDefault()})}
+function hl3(){const net=V3.net||{EP,LK},q=S.q.toLowerCase(),sn=S.selN,ss=S.sel,st=net.st||(id=>V3.e?V3.e.L[id].st:"unknown");
+net.EP.forEach(p=>{const m=V3.nodes[p.id];if(!m)return;const dim=(sn&&sn!=p.id&&!net.LK.some(l=>(l.s==sn&&l.d==p.id)||(l.d==sn&&l.s==p.id)))||(q&&!(p.id+(p.nm||"")).toLowerCase().includes(q));m.material.opacity=dim?.3:1;m.material.emissiveIntensity=V3.hover=="n"+p.id?1.1:.65});
+net.LK.forEach(l=>{const o=V3.links[l.id];if(!o)return;const on=ss==l.id||(sn&&(sn==l.s||sn==l.d)),dim=((sn||ss)&&!on)||(q&&!(l.id+l.s+l.d).toLowerCase().includes(q))||(S.sf&&st(l.id)!=S.sf);o.m.material.opacity=o.a.material.opacity=dim?.2:1;o.m.material.emissiveIntensity=V3.hover=="l"+l.id?1:.4;o.sel=on})}
+function place3(){const net=V3.net||{EP,LK},Y=new THREE.Vector3(0,1,0);net.EP.forEach(p=>{const m=V3.nodes[p.id];if(m){const c=V3.cur[p.id];m.position.set(c.x,c.y,c.z)}});
+net.LK.forEach(l=>{const o=V3.links[l.id],a=V3.cur[l.s],b=V3.cur[l.d];if(!o||!a||!b)return;const A=new THREE.Vector3(a.x,a.y,a.z),B=new THREE.Vector3(b.x,b.y,b.z),u=B.clone().sub(A),L=u.length();if(L<24)return;u.normalize();
+const off=net.LK.some(m=>m.s==l.d&&m.d==l.s)?new THREE.Vector3().crossVectors(u,Y).normalize().multiplyScalar(3):new THREE.Vector3(),s0=A.clone().addScaledVector(u,11).add(off),e0=B.clone().addScaledVector(u,-11).add(off),len=s0.distanceTo(e0),q=new THREE.Quaternion().setFromUnitVectors(Y,u);
+o.m.position.copy(s0).add(e0).multiplyScalar(.5);o.m.scale.set(o.sel?1.7:1,len,o.sel?1.7:1);o.m.quaternion.copy(q);o.a.position.copy(e0).addScaledVector(u,-2);o.a.quaternion.copy(q);o.s0=s0;o.e0=e0});
+if(V3.ring&&V3.cur[S.selN]){const c=V3.cur[S.selN];V3.ring.position.set(c.x,c.y,c.z)}}
+function sync3d(){const e=V3.e,net=V3.net||{EP,LK},st=net.st||(id=>e?e.L[id].st:"unknown"),av=net.avg||(id=>e?e.L[id].avg:4),demo=net.demo!==false&&S.mode=="demo",n=net.EP.length,k=n>16?.6:1,M=(c,em)=>new THREE.MeshStandardMaterial({color:c,emissive:em,emissiveIntensity:.4,metalness:.3,roughness:.5,transparent:true});
+V3.g.children.slice().forEach(o=>{V3.g.remove(o);o.traverse(x=>{x.geometry&&x.geometry.dispose();x.material&&x.material.dispose()})});V3.nodes={};V3.links={};V3.pulses=[];V3.labs=[];V3.l.innerHTML="";V3.ring=null;
+const lab=(t,ref,dy,cl)=>{const d=document.createElement("div");d.className="l3 "+(cl||"");d.textContent=t;V3.l.appendChild(d);V3.labs.push({el:d,ref,dy})};
+net.EP.forEach(p=>{const t=pos3(p);V3.cur[p.id]=V3.cur[p.id]&&!reduce?V3.cur[p.id]:{...t};V3.cur[p.id].tg=t;const ls=net.LK.filter(l=>l.s==p.id||l.d==p.id).map(l=>st(l.id)),ws=ls.includes("faulted")?"faulted":ls.includes("suspected")?"suspected":ls.includes("healthy")?"healthy":"unknown",m=new THREE.Mesh(new THREE.BoxGeometry(16*k,6*k,16*k),M(0x1e293b,SC3[ws]));m.userData={n:p.id};m.add(new THREE.LineSegments(new THREE.EdgesGeometry(m.geometry),new THREE.LineBasicMaterial({color:SC3[ws]})));const tp=new THREE.Mesh(new THREE.BoxGeometry(12*k,1.2*k,12*k),new THREE.MeshStandardMaterial({color:SC3[ws],emissive:SC3[ws],emissiveIntensity:.8,transparent:true,opacity:.75}));tp.position.y=3.4*k;tp.userData={};m.add(tp);V3.g.add(m);V3.nodes[p.id]=m;
+if(n<=16||S.selN==p.id||net.LK.some(l=>(l.s==S.selN&&l.d==p.id)||(l.d==S.selN&&l.s==p.id)))lab(p.id,m.position,5,"nl")});
+net.LK.forEach(l=>{const c=SC3[st(l.id)],m=new THREE.Mesh(new THREE.CylinderGeometry(1,1,1,8),M(c,c)),a=new THREE.Mesh(new THREE.ConeGeometry(2.4,6,10),M(c,c));m.userData=a.userData={l:l.id};const gl=new THREE.Mesh(new THREE.CylinderGeometry(2.4,2.4,1,10),new THREE.MeshBasicMaterial({color:c,transparent:true,opacity:.13,depthWrite:false}));gl.userData={};m.add(gl);V3.g.add(m,a);const o=V3.links[l.id]={m,a};
+if(demo&&e&&!reduce&&net.LK.length<=60){const b=new THREE.Mesh(new THREE.SphereGeometry(1.8,8,8),new THREE.MeshBasicMaterial({color:0xffffff}));b.userData={};V3.g.add(b);V3.pulses.push({b,o,sp:1/(2+av(l.id)/3),off:(parseInt(l.id.replace(/\D/g,""))*.37)%1})}});
+if(S.selN){V3.ring=new THREE.Mesh(new THREE.TorusGeometry(13*k,.7,8,40),new THREE.MeshBasicMaterial({color:0x22d3ee}));V3.ring.rotation.x=Math.PI/2;V3.ring.userData={};V3.g.add(V3.ring)}
+hl3();place3();net.LK.forEach(l=>{const o=V3.links[l.id];if(o&&(o.sel||(n<=8&&net.LK.length<=12)))lab(l.bw?l.id+" Â· "+l.bw+"-bit Â· "+l.lat+" cyc":l.id,o.m.position,3,"ll")})}
+function loop3d(){if(!V3.on||document.hidden||!V3.w.isConnected){V3.run=false;return}V3.run=true;try{const h=V3.w.parentElement,w=h.clientWidth,ht=h.clientHeight;if(w&&ht&&(V3.pw!=w||V3.ph2!=ht)){V3.rd.setSize(w,ht,false);V3.cam.aspect=w/ht;V3.cam.updateProjectionMatrix();V3.pw=w;V3.ph2=ht}
+let mv=false;Object.values(V3.cur).forEach(c=>{if(!c.tg)return;const dx=c.tg.x-c.x,dy=c.tg.y-c.y,dz=c.tg.z-c.z;if(Math.abs(dx)+Math.abs(dy)+Math.abs(dz)>.05){const f=reduce?1:.15;c.x+=dx*f;c.y+=dy*f;c.z+=dz*f;mv=true}});if(mv)place3();
+const t=performance.now()/1000;V3.pulses.forEach(p=>{if(!p.o.s0)return;const u=(t*p.sp+p.off)%1;p.b.position.lerpVectors(p.o.s0,p.o.e0,u)});
+const cam=V3.cam,r=V3.r;cam.position.set(V3.tx+r*Math.sin(V3.ph)*Math.sin(V3.th),V3.ty+r*Math.cos(V3.ph),V3.tz+r*Math.sin(V3.ph)*Math.cos(V3.th));cam.lookAt(V3.tx,V3.ty,V3.tz);cam.updateMatrixWorld();
+const v=new THREE.Vector3();V3.labs.forEach(q=>{v.copy(q.ref);v.y+=q.dy;v.project(cam);q.el.style.display=v.z>1?"none":"block";q.el.style.left=(v.x*.5+.5)*w+"px";q.el.style.top=(-v.y*.5+.5)*ht+"px"});V3.rd.render(V3.sc,cam);requestAnimationFrame(loop3d)}
+catch(x){V3.ok=false;V3.err=x.message;V3.on=false;S.v3=false;V3.run=false;toast("3D rendering failed ("+x.message+"); switched to 2D.");render()}}
+document.addEventListener("visibilitychange",()=>{if(V3.on&&!V3.run)requestAnimationFrame(loop3d)});
+function spatial(e,net){V3.e=e;V3.net=net||null;init3d();return S.v3&&V3.ok?'<div id="v3host" style="position:absolute;inset:0"></div>':topo(e,true,net)}
+function mount3d(){$("#v3host").appendChild(V3.w);sync3d();if(!V3.run)requestAnimationFrame(loop3d)}
+function redrawTopo(){if(S.vt=="metrics")return;if(V3.on){hl3();place3()}else{$("#tvw").innerHTML=topo(V3.e,true,V3.net);bindTopo()}}
+function tb3(full){const tab=(k,n)=>`<button data-a="vt" data-v="${k}" aria-pressed="${S.vt==k}" ${k=="3d"&&!V3.ok?'disabled title="3D unavailable in this browser"':""}>${n}</button>`;return`<div class="tb">${tab("3d","3D view")}${tab("2d","Topology")}${full?tab("metrics","Metrics"):""}${full?"":`<button data-a="z" data-v="1.25" aria-label="Zoom in">+</button><button data-a="z" data-v="0.8" aria-label="Zoom out">âˆ’</button><button data-a="z" data-v="0">Fit</button>`}<input id="tq" placeholder="Find chiplet or link" aria-label="Find chiplet or link" value="${esc(S.q)}" size="14"><select id="tsf" aria-label="Filter by link state"><option value="">All states</option>${["healthy","suspected","faulted"].map(v=>`<option ${S.sf==v?"selected":""}>${v}</option>`).join("")}</select></div>`}
+function cfgHtml(){const o=(v,t,c)=>`<option value="${v}" ${c?"selected":""}>${t}</option>`,eo=EP.map(q=>o(q.id,esc(q.nm))).join(""),P=(v,t,dis)=>`<button data-a="preset" data-v="${v}" aria-pressed="${NET.preset==v}" ${dis?'disabled title="Fully connected is limited to 8 chiplets"':""}>${t}</button>`;
+return`<h2 class="sec" style="margin-top:0">Network configuration</h2><label class="lbl">Chiplet count (2â€“${MAXN})<span class="stp"><button data-a="nstep" data-v="-1" aria-label="Fewer chiplets">âˆ’</button><input id="cn" type="number" min="2" max="${MAXN}" value="${NET.n}" aria-label="Chiplet count"><button data-a="nstep" data-v="1" aria-label="More chiplets">+</button></span></label><input type="hidden" id="cp" value="${NET.preset=="custom"?"ring":NET.preset}"><h2 class="sec">Topology preset</h2><div class="pg">${P("ring","Ring")}${P("mesh","Mesh")}${P("star","Star")}${P("full","Fully connected (max 8)",NET.n>8)}</div>${NET.preset=="custom"?'<p class="mu">Custom: links edited by hand.</p>':""}<h2 class="sec">Link configuration</h2><div class="bar"><label>Transfers / link / interval <select id="ct">${[5,10,20].map(v=>o(v,v,NET.tpi==v)).join("")}</select></label></div><div class="bar"><label>Base latency (cycles) <input id="cl" value="${NET.lat}" size="3"></label><label>Width <select id="cw">${[32,64,128].map(v=>o(v,v+" bit",NET.bw==v)).join("")}</select></label></div><button data-a="apply">Apply link settings</button><div class="bar"><select id="as" aria-label="Source">${eo}</select>â†’<select id="ad" aria-label="Destination">${eo}</select></div><div class="bar"><button class="pr" data-a="addl">Add link</button><button data-a="rml" ${S.sel?"":"disabled"}>Remove link</button></div><h2 class="sec">Layout</h2><button data-a="alay">Auto layout</button><p class="mu">Changing the topology clears run history. Limit: ${MAXN} chiplets, 120 links.</p>`}
+function metricsHtml(e){const lb=LK.map(l=>l.id),g=k=>LK.map(l=>e.L[l.id][k]);return`<div class="mt"><h2>Per-link metrics (simulated, run ${e.id})</h2>${chart(lb,[{name:"avg latency",c:"cy",v:g("avg")},{name:"max latency",c:"am",v:g("mx")}],"cycles","Link",true)}${chart(lb,[{name:"mismatches",c:"rd",v:g("er")},{name:"dropped",c:"am",v:g("dr")},{name:"excursions",c:"cy",v:g("ex")}],"count","Link",true)}</div>`}
+function inspector(e){return detail(e)+legend}
+function dock(e){const s=susp(e),c=s?cand(e,s):[],cnt=k=>LK.filter(l=>e.L[l.id].st==k).length,ex=S.exps,A=S.dc?ex.find(x=>x.id==S.dc.a):null,B=S.dc?ex.find(x=>x.id==S.dc.b):null,tm=x=>x.at.slice(11,19),tot=x=>x.tot.er+x.tot.dr+x.tot.ex,
+sel=(id,v)=>`<select id="${id}" aria-label="${id=="cb"?"Baseline run":"Current run"}">${ex.map(x=>`<option value="${x.id}" ${x.id==v?"selected":""}>${x.id} ${esc(x.name)}</option>`).join("")}</select>`;
+return`<div class="dock"><section class="gp" aria-label="Diagnostics"><h2>Diagnostics</h2><div class="bar"><button class="pr" data-a="rerun" ${S.running?"disabled":""}>Re-run scenario</button><button data-a="go" data-v="diag">Open console</button></div><p><span class="healthy">${cnt("healthy")} healthy</span> Â· <span class="suspected">${cnt("suspected")} suspected</span> Â· <span class="faulted">${cnt("faulted")} faulted</span></p>${e.ev.slice(0,3).map(x=>`<p><span class="bd ${x.sev}">${x.sev}</span> ${x.link} ${x.type}</p>`).join("")||"<p class=mu>No anomalies in this run.</p>"}<p class="mu">${e.id} Â· ${esc(e.name)}</p></section>
+<section class="gp" aria-label="Adaptive test planner"><h2>Adaptive test planner</h2><p class="mu">Heuristic information-split ranking; scores are not probabilities.</p>${s?c.slice(0,3).map((t,i)=>`<p>${i+1}. ${esc(t.name)} <span class="bd ${i?"suspected":"faulted"}">${i?"medium":"high priority"}</span></p>`).join("")+(c.length?`<button data-a="test" data-v="${c[0].id}">Run recommended test</button> `:""):"<p class=mu>No anomalies, so there is nothing to localize.</p>"}<button data-a="go" data-v="plan">Open planner</button></section>
+<section class="gp" aria-label="Experiment comparison"><h2>Experiment comparison</h2><div class="bar">${sel("cb",S.dc?S.dc.a:ex[0].id)} vs ${sel("cc",S.dc?S.dc.b:e.id)}</div><button class="pr" data-a="dcmp">Compare</button>${A&&B?`<table><tr><th></th><th>${A.id}</th><th>${B.id}</th></tr><tr><th>Anomalies</th><td>${tot(A)}</td><td>${tot(B)}</td></tr><tr><th>Dropped</th><td>${A.tot.dr}</td><td>${B.tot.dr}</td></tr><tr><th>Avg latency (cyc)</th><td>${A.tot.avg}</td><td>${B.tot.avg}</td></tr><tr><th>Network</th><td>${A.net.n}C/${A.net.links}L</td><td>${B.net.n}C/${B.net.links}L</td></tr></table>`:""}</section>
+<section class="gp" aria-label="Run results and report"><h2>Run results &amp; report</h2><table><tr><th>Network</th><td>${e.net.n} chiplets, ${e.net.links} links</td></tr><tr><th>Topology</th><td>${e.net.preset}</td></tr><tr><th>Faults injected</th><td>${e.sc.faults.length}</td></tr><tr><th>Anomalies detected</th><td>${tot(e)}</td></tr><tr><th>Source</th><td>${e.source}</td></tr></table><div class="bar"><button class="pr" data-a="go" data-v="rep">Generate report</button><button data-a="json">Export JSON</button></div></section>
+<section class="gp" aria-label="Event timeline"><h2>Event timeline</h2>${ex.slice(-4).reverse().map(x=>`<p><span class="mu">${tm(x)} UTC</span> ${x.id} ${esc(x.name)} completed</p>`).join("")}<p class="mu">Network: ${NET.n} chiplets, ${NET.preset}</p></section></div>`}
+function pTopo(e){const c=S.vt=="metrics"?metricsHtml(e):spatial(e);return`<div class="ws"><aside class="gp" aria-label="Network configuration">${cfgHtml()}</aside><div class="stage"><div id="tvw" style="position:absolute;inset:0">${c}</div>${tb3(true)}<div class="cc"><button data-a="z" data-v="0" aria-label="Fit to view" title="Fit to view">âŒ–</button><button data-a="z" data-v="1.25" aria-label="Zoom in">+</button><button data-a="z" data-v="0.8" aria-label="Zoom out">âˆ’</button></div></div><aside class="gp" id="dt" aria-label="Inspector">${inspector(e)}</aside></div>${dock(e)}`}
+function pFault(e){return head("Fault Injection","Choose a named scenario, or define a custom fault. Runs execute the abstract in-browser model, not RTL.")+`<div class="g">${SC.map(s=>`<div class="pn"><h2>${s.name}</h2><p class="mu">${s.desc}</p><button class="pr" data-a="run" data-v="${s.id}" ${S.running?"disabled":""}>Run scenario</button></div>`).join("")}</div>
+<div class="pn" style="margin-top:12px"><h2>Custom fault</h2><div class="bar"><label>Link <select id="fl">${LK.map(l=>`<option ${l.id==S.sel?"selected":""}>${l.id}</option>`).join("")}</select></label><label>Type <select id="ft"><option value="bit">Bit corruption</option><option value="delay">Transfer delay</option><option value="drop">Dropped transfer</option></select></label><label>Bits (0â€“31, comma-separated) <input id="fb" value="3,17" size="8"></label><label>Delay (cycles) <input id="fd" value="12" size="3"></label><label>Drop every N <input id="fn" value="7" size="3"></label><label>Start interval (0â€“19) <input id="fs" value="4" size="3"></label><label>Duration (intervals) <input id="fu" value="10" size="3"></label><label>Seed <input id="fe" value="777" size="5"></label></div><p class="mu">Only the parameters relevant to the chosen type are used.</p><p class="err" id="ferr" role="alert"></p><p id="fsum" role="status"></p><button class="pr" data-a="cust" ${S.running?"disabled":""}>Validate and review</button></div>
+${S.running?`<p role="status">Running â€œ${esc(S.running)}â€â€¦</p>`:`<div class="pn" style="margin-top:12px"><h2>Last result: ${esc(e.name)} (${e.id})</h2><p>${e.tot.er} mismatches, ${e.tot.dr} dropped, ${e.tot.ex} latency excursions. Faulted/suspected links: ${LK.filter(l=>e.L[l.id].st!="healthy").map(l=>`${l.id} (${e.L[l.id].st})`).join(", ")||"none"}.</p></div>`}`}
+function custom(){const g=id=>$("#"+id).value.trim(),I=v=>/^-?\d+$/.test(v)?+v:NaN,er=[],type=g("ft"),link=g("fl"),st=I(g("fs")),du=I(g("fu")),sd=I(g("fe")),f={link,type,start:st,dur:du};
+if(!(st>=0&&st<=19))er.push("Start interval must be a whole number from 0 to 19.");if(!(du>=1))er.push("Duration must be at least 1 interval.");else if(st+du>20)er.push("Start + duration must not exceed 20 intervals.");if(!(sd>=0))er.push("Seed must be a non-negative whole number.");
+if(type=="bit"){const b=g("fb").split(",").map(x=>I(x.trim()));if(!b.length||b.some(x=>!(x>=0&&x<=31))||new Set(b).size!=b.length)er.push("Bits must be unique whole numbers from 0 to 31.");f.bits=b}
+if(type=="delay"){f.delay=I(g("fd"));if(!(f.delay>=1&&f.delay<=64))er.push("Delay must be 1â€“64 cycles.")}
+if(type=="drop"){f.every=I(g("fn"));if(!(f.every>=1&&f.every<=200))er.push("Drop frequency must be 1â€“200.")}
+$("#ferr").innerHTML=er.map(esc).join("<br>");if(!er.length){S.pend={name:"Custom: "+type+" on "+link,seed:sd,faults:[f],desc:"Custom"};$("#fsum").innerHTML=`Proposed: <b>${esc(FT_[type])}</b> on ${link} (${LK.find(l=>l.id==link).s} â†’ ${LK.find(l=>l.id==link).d}), intervals ${st}â€“${st+du-1}, seed ${sd}. Simulated only. <button class="pr" data-a="cfm">Confirm and run</button>`}}const FT_={bit:"Bit corruption",delay:"Transfer delay",drop:"Dropped transfer"};
+const SEV=["info","warning","error","critical"];
+function evRows(e){const f=S.f,q=f.q.toLowerCase(),r=e.ev.filter(x=>(!f.sev||x.sev==f.sev)&&(!f.typ||x.type==f.typ)&&(!f.lnk||x.link==f.lnk)&&(!q||JSON.stringify(x).toLowerCase().includes(q)));
+return`<p class="mu">${r.length} of ${e.ev.length} events${r.length>60?" (first 60 shown; export for all)":""}</p><div class="sc"><table><thead><tr><th>Cycle</th><th>Event</th><th>Link</th><th>Type</th><th>Expected</th><th>Observed</th><th>Latency</th><th>Severity</th></tr></thead><tbody>${r.slice(0,60).map(x=>`<tr data-e="${x.id}" class="${S.ev==x.id?"on":""}"><td>${x.cyc}</td><td>${x.id}</td><td>${x.link}</td><td>${x.type}</td><td class="mono">${x.exp}</td><td class="mono">${x.obs}</td><td>${x.lat==null?"unavailable":x.lat+" cyc"}</td><td><span class="bd ${x.sev}">${x.sev}</span></td></tr>`).join("")||"<tr><td colspan=8 class=mu>No events match.</td></tr>"}</tbody></table></div>`}
+function pDiag(e){const f=S.f,x=e.ev.find(v=>v.id==S.ev);
+return head("Live Diagnostics","Event stream of the selected simulated run. Events are traceable to scenario and seed.")+`<div class="bar"><label>Run <select data-a="cur">${S.exps.map(v=>`<option value="${v.id}" ${v.id==e.id?"selected":""}>${v.id} ${esc(v.name)}</option>`).join("")}</select></label><input id="fq" placeholder="Search events" aria-label="Search events" value="${esc(f.q)}"><select id="fsv" aria-label="Severity"><option value="">All severities</option>${SEV.map(s=>`<option ${f.sev==s?"selected":""}>${s}</option>`).join("")}</select><select id="fty" aria-label="Event type"><option value="">All types</option>${["data_mismatch","dropped_transfer","latency_excursion","protocol_violation"].map(s=>`<option ${f.typ==s?"selected":""}>${s}</option>`).join("")}</select><select id="fli" aria-label="Link"><option value="">All links</option>${LK.map(l=>`<option ${f.lnk==l.id?"selected":""}>${l.id}</option>`).join("")}</select><button data-a="csv">Export CSV</button></div>
+<div class="g" style="grid-template-columns:minmax(0,2fr) minmax(260px,1fr)"><div class="pn" id="evt">${evRows(e)}</div><div class="pn"><h2>Event detail</h2>${x?`<table><tr><th>ID</th><td>${x.id}</td></tr><tr><th>Experiment</th><td>${x.xid}</td></tr><tr><th>Scenario / seed</th><td>${esc(e.name)} / ${e.seed}</td></tr><tr><th>Source</th><td>${e.source}</td></tr><tr><th>Link</th><td>${x.link}</td></tr><tr><th>Expected â†’ observed</th><td class="mono">${x.exp} â†’ ${x.obs}</td></tr></table><button data-a="sl" data-v="${x.link}" data-go="topology">Show link on topology</button>`:"<p class=mu>Select an event row.</p>"}</div>
+<div class="pn"><h2>Latency per interval (6 highest-latency links, simulated)</h2>${chart(IV,[...LK].sort((a,b)=>e.L[b.id].avg-e.L[a.id].avg).slice(0,6).map((l,i)=>({name:l.id,c:["cy","am","rd","gn","un","tx"][i],v:e.L[l.id].lat})),"avg latency (cycles)","Interval",false)}</div><div class="pn"><h2>Anomalies per interval</h2>${chart(IV,[{name:"all links",c:"rd",v:IV.map((_,i)=>LK.reduce((a,l)=>a+e.L[l.id].an[i],0))}],"anomalies","Interval",true)}</div></div>`}
+function pPlan(e){const s=susp(e);let h=head("Adaptive Test Planner","Heuristic planner: each recommendation is derived from the evidence below. Scores are heuristic, not calibrated probabilities.");
+if(!s)return h+`<div class="pn" style="margin-top:12px"><h2>No anomalies in ${e.id}</h2><p>The run shows no diagnostic evidence, so there is nothing to localize. Run a faulty scenario to use the planner.</p></div>`;
+const c=cand(e,s),top=Math.max(...s),ti=s.indexOf(top),done=top>=.8;
+return h+`<div class="g"><div class="pn"><h2>Evidence summary (${e.id}, ${esc(e.name)})</h2><p>${e.tot.er} mismatches, ${e.tot.dr} dropped, ${e.tot.ex} excursions.</p><h2>Suspicion per link (heuristic)</h2>${LK.map((l,i)=>`<p>${l.id} <span class="mu">anomalies ${e.L[l.id].an_}</span><br><svg viewBox="0 0 200 8" width="100%" height="8" role="img" aria-label="${l.id} suspicion ${s[i].toFixed(2)}"><rect width="200" height="8" fill="var(--p2)"/><rect width="${s[i]*200}" height="8" fill="var(--am)"/></svg> ${s[i].toFixed(2)}</p>`).join("")}<p class="mu">Model: s(l) âˆ (anomalies(l)+0.5) Ã— 4 per failing test covering l Ã— 0.1 per passing test covering l. Test score = m(1âˆ’m)/(1+0.1Â·|links|), m = suspicion mass covered.</p></div>
+<div class="pn"><h2>${done?"Heuristic conclusion (not a verified diagnosis)":"Recommendation (not yet scheduled)"}</h2>${done?`<p>Link ${LK[ti].id} holds the highest heuristic suspicion (${top.toFixed(2)}). Confirm with a physical or RTL investigation.</p>`:c.length?`<p><b>${c[0].name}</b> covers ${(c[0].m*100).toFixed(0)}% of current suspicion across ${c[0].L.length} link(s), the best split of remaining candidates (score ${c[0].sc.toFixed(3)}).</p><button class="pr" data-a="test" data-v="${c[0].id}">Run recommended test</button>`:"<p>All tests executed; no further recommendation.</p>"}
+<h2>Candidate tests</h2><table><tr><th>Test</th><th>Links</th><th>Score</th></tr>${c.map(t=>`<tr><td>${t.name}</td><td>${t.L.join(", ")}</td><td>${t.sc.toFixed(3)}</td></tr>`).join("")}</table></div>
+<div class="pn"><h2>Test history</h2>${e.plan.map((p,i)=>{const t=TESTS().find(t=>t.id==p.id);return`<p>${i+1}. ${t.name}: <span class="${p.fail?"faulted":"healthy"}">${p.fail?"fail (anomaly on a covered link)":"pass"}</span> <span class="mu">completed</span></p>`}).join("")||"<p class=mu>No tests run yet.</p>"}<button data-a="rst">Reset planner</button></div></div>`}
+function pExp(e){const sel=S.exps.filter(x=>S.cmp.has(x.id)),lb=sel.map(x=>x.id);
+return head("Experiments & Benchmarks","Every run keeps its source, scenario and seed. Select two or more runs to compare.")+`<div class="bar"><select id="es">${SC.map(s=>`<option value="${s.id}">${s.name}</option>`).join("")}</select><button class="pr" data-a="runsel" ${S.running?"disabled":""}>Run experiment</button></div>
+<div class="pn sc"><table><thead><tr><th>Compare</th><th>ID</th><th>Scenario</th><th>Network</th><th>Seed</th><th>Source</th><th>Anomalies</th><th>Avg lat. (cyc)</th></tr></thead><tbody>${S.exps.map(x=>`<tr><td><input type="checkbox" data-a="cmp" data-v="${x.id}" aria-label="Compare ${x.id}" ${S.cmp.has(x.id)?"checked":""}></td><td>${x.id}</td><td>${esc(x.name)}</td><td>${x.net.n}C / ${x.net.links}L ${x.net.preset}</td><td>${x.seed}</td><td>${x.source}</td><td>${x.tot.er+x.tot.dr+x.tot.ex}</td><td>${x.tot.avg}</td></tr>`).join("")}</tbody></table></div>
+${sel.length<2?`<p class="warn">Select at least two runs to see a comparison.</p>`:`<div class="g"><div class="pn"><h2>Errors by run (simulated)</h2>${chart(lb,[{name:"mismatches",c:"rd",v:sel.map(x=>x.tot.er)},{name:"dropped",c:"am",v:sel.map(x=>x.tot.dr)},{name:"excursions",c:"cy",v:sel.map(x=>x.tot.ex)}],"count","Run",true)}</div><div class="pn"><h2>Latency by run (simulated)</h2>${chart(lb,[{name:"avg",c:"cy",v:sel.map(x=>x.tot.avg)},{name:"max",c:"am",v:sel.map(x=>x.tot.mx)}],"cycles","Run",true)}</div></div>`}`}
+function report(e){return{report:"InterconnectSentry experiment report",source:e.source,note:"Simulated by an abstract in-browser model; no RTL executed, no hardware measured.",experiment:e.id,network:e.net,scenario:e.name,seed:e.seed,generatedAt:new Date().toISOString(),faults:e.sc.faults,totals:e.tot,links:e.L&&Object.fromEntries(Object.entries(e.L).map(([k,m])=>[k,{transfers:m.tr,mismatches:m.er,dropped:m.dr,excursions:m.ex,avgLatencyCycles:m.avg,maxLatencyCycles:m.mx,state:m.st}])),plannerSteps:e.plan.map(p=>({test:p.id,result:p.fail?"fail":"pass"})),events:e.ev,limitations:["Heuristic scores are not calibrated probabilities.","Latency units are abstract model cycles."]}}
+function pRep(e){const r=report(S.exps.find(x=>x.id==S.rep)||e);return head("Reports","Preview and export. Reports always carry their source identity.")+`<div class="bar"><select data-a="rsel">${S.exps.map(v=>`<option value="${v.id}" ${v.id==r.experiment?"selected":""}>${v.id} ${esc(v.name)}</option>`).join("")}</select><button class="pr" data-a="json">Export JSON</button><button data-a="csv">Export events CSV</button></div><div class="pn"><h2>${r.experiment}: ${esc(r.scenario)}</h2><p><b>Source:</b> ${r.source}. ${r.note}</p><p><b>Seed:</b> ${r.seed}. <b>Faults:</b> ${r.faults.map(f=>`${f.type} on ${f.link}`).join("; ")||"none"}.</p><div class="sc"><table><tr><th>Link</th><th>State</th><th>Mismatches</th><th>Dropped</th><th>Excursions</th><th>Avg latency (cyc)</th></tr>${Object.entries(r.links).map(([k,m])=>`<tr><td>${k}</td><td class="${m.state}">${m.state}</td><td>${m.mismatches}</td><td>${m.dropped}</td><td>${m.excursions}</td><td>${m.avgLatencyCycles}</td></tr>`).join("")}</table></div><p><b>Planner:</b> ${r.plannerSteps.length?r.plannerSteps.map(s=>s.test+" "+s.result).join(", "):"no tests run"}.</p><p class="mu">${r.limitations.join(" ")}</p></div>`}
+const TG={fastapi:"FastAPI simulator gateway",fpga:"PYNQ-Z2 FPGA hardware"};
+function pSet(){
+const L=S.live, H=S.hardwareStatus;
+const stl={idle:"NOT CONNECTED",connecting:"CONNECTING",error:"ERROR",connected:"CONNECTED"}[L.state]||L.state;
+const hardwarePanel=L.target==="fpga"?`
+<div class="pn" style="margin-top:12px">
+<h2>PYNQ-Z2 Hardware Controller</h2>
+<p class="mu">These controls communicate with the physical FPGA through the Windows XSDB bridge. Hardware measurements are kept separate from software simulation results.</p>
+<div class="bar">
+<button data-a="fpgaStatus" ${S.hardwareBusy?"disabled":""}>Refresh hardware status</button>
+<button class="pr" data-a="fpgaStart" ${L.state!=="connected"||S.hardwareBusy?"disabled":""}>Start workload</button>
+<button data-a="fpgaStop" ${L.state!=="connected"||S.hardwareBusy?"disabled":""}>Stop workload</button>
+</div>
+<h3>Workload configuration</h3>
+<div class="bar">
+<label>Transfers <input id="hwWorkload" type="number" min="1" max="65535" value="100"></label>
+<label>Target link <input id="hwTarget" type="number" min="0" max="15" value="0"></label>
+<label>Fault type <select id="hwFaultType">
+<option value="0">No fault</option><option value="1">Corruption</option>
+<option value="2">Delay</option><option value="3">Drop</option>
+</select></label>
+</div>
+<div class="bar">
+<label><input id="hwFaultEnable" type="checkbox"> Enable fault injection</label>
+<label>Fault mask <input id="hwFaultMask" value="0x00000000" size="14"></label>
+<label>Delay cycles <input id="hwDelay" type="number" min="0" max="255" value="0"></label>
+<label>Drop interval <input id="hwDrop" type="number" min="0" max="255" value="0"></label>
+</div>
+<h3>Hardware-reported status</h3>
+${H?`
+<table>
+<tr><th>Device</th><td>${esc(H.device||"PYNQ-Z2")}</td></tr>
+<tr><th>State</th><td><b>${esc(H.status||"Unknown")}</b></td></tr>
+<tr><th>Raw status</th><td class="mono">${esc(H.raw||"unavailable")}</td></tr>
+<tr><th>Transfers</th><td>${H.transfers??"unavailable"}</td></tr>
+<tr><th>Fault detected</th><td>${H.fault_detected===true?"Yes":H.fault_detected===false?"No":"Unavailable"}</td></tr>
+<tr><th>Localized</th><td>${H.localized===true?"Yes":H.localized===false?"No":"Unavailable"}</td></tr>
+<tr><th>Evidence valid</th><td>${H.evidence_valid===true?"Yes":H.evidence_valid===false?"No":"Unavailable"}</td></tr>
+<tr><th>Last status read</th><td>${esc(H.timestamp||"unavailable")}</td></tr>
+</table>`:`<p class="mu">No FPGA status has been loaded. Connect to the FPGA target to read the board.</p>`}
+<p class="mu">Only values returned by the hardware bridge are displayed here. A completed workload does not automatically mean a fault was detected or localized.</p>
+</div>`:"";
+return head("Connections & Settings","Operating mode, source configuration and demo data.")+
+`<div class="g"><div class="pn">
+<h2>Hardware / Live Data source</h2>
+<div class="bar"><label>Target <select id="ls" data-a="liveTarget">
+<option value="fastapi" ${L.target==="fastapi"?"selected":""}>${TG.fastapi}</option>
+<option value="fpga" ${L.target==="fpga"?"selected":""}>${TG.fpga}</option>
+</select></label></div>
+<div class="bar"><label>FastAPI endpoint URL <input id="lu" size="34" value="${esc(L.url)}"></label></div>
+<p class="err" id="lerr" role="alert">${esc(L.msg)}</p>
+<div class="bar">
+<button class="pr" data-a="conn" ${L.state==="connecting"?"disabled":""}>Connect</button>
+<button data-a="disc" ${L.state==="idle"?"disabled":""}>Disconnect</button>
+</div>
+<table>
+<tr><th>Connection state</th><td><span class="bd unknown">${stl}</span></td></tr>
+<tr><th>Selected target</th><td>${esc(TG[L.target]||L.target)}</td></tr>
+<tr><th>Last successful communication</th><td>${L.last||"never"}</td></tr>
+<tr><th>Protocol</th><td>GET /health + GET /topology${L.target==="fpga"?" + GET /hardware/status":""}</td></tr>
+</table>
+<h2>Troubleshooting</h2>
+<p class="mu">The FastAPI backend must be running and reachable from your browser. For FPGA access, the Windows XSDB bridge must also be running and connected to the PYNQ-Z2 board.</p>
+</div>
+${hardwarePanel}
+${srcPanel()}
+<div class="pn">
+<h2>Demo data</h2>
+<p>${S.exps.length} simulated run(s) stored in memory for this session.</p>
+<button data-a="reset">Reset demo data</button>
+<h2 style="margin-top:14px">About this preview</h2>
+<p><b>Implemented:</b> deterministic software scenarios, topology visualization, fault validation, event filters, planner, comparisons, reports and backend connection.</p>
+<p><b>Hardware:</b> FPGA status and workload controls through the PYNQ-Z2 bridge.</p>
+<p><b>Important:</b> Software simulation results and physical FPGA measurements are separate data sources.</p>
+<p class="mu">Themes follow your viewer setting. Demo data lives in memory and resets on reload.</p>
+</div></div>`
+}
+/* ---- source data contract v1 (validated; never fabricated) ---- */
+const ago=t=>Math.max(0,Math.round((Date.now()-Date.parse(t))/1000)),srcLabel=()=>({mock:"MOCK SOURCE",simulator:"SIMULATOR SNAPSHOT (unverified)",hardware:"HARDWARE SNAPSHOT (unverified)"}[S.src.source.type]);
+function mockSnap(){const ids=["N0","N1","N2","N3","N4","N5"],t=new Date().toISOString();return{schemaVersion:1,source:{id:"mock-ui-test",type:"mock",name:"MOCK source for UI testing (not hardware)"},timestamp:t,capabilities:{faultInjection:false},endpoints:ids.map(id=>({id,name:"Node "+id})),links:ids.map((id,i)=>({id:"K"+i,src:id,dst:ids[(i+1)%6],state:i==2?"suspected":"healthy",latencyCycles:5+i,transfers:1000,errors:i==2?3:0,dropped:i==4?null:0})),events:[{id:"M-1",link:"K2",type:"data_mismatch",severity:"warning",timestamp:t,expected:"0x1",observed:"0x3"}]}}
+function validateSource(j){const e=[],A=Array.isArray,str=v=>typeof v=="string"&&v.length>0&&v.length<=64;if(!j||typeof j!="object")return["Snapshot must be a JSON object."];
+if(j.schemaVersion!==1)e.push("Unsupported schemaVersion "+j.schemaVersion+" (expected 1).");
+if(!j.source||!str(j.source.id)||!str(j.source.name)||!["hardware","simulator","mock"].includes(j.source.type))e.push("source needs id, name and type (hardware | simulator | mock).");
+if(isNaN(Date.parse(j.timestamp)))e.push("timestamp must be an ISO date-time.");
+if(!A(j.endpoints)||j.endpoints.length<2||j.endpoints.length>64)e.push("endpoints must list 2â€“64 entries.");
+if(!A(j.links)||j.links.length<1||j.links.length>256)e.push("links must list 1â€“256 entries.");
+if(e.length)return e;const ids=new Set(),li=new Set();j.endpoints.forEach(p=>{if(!str(p.id)||ids.has(p.id))e.push("Invalid or duplicate endpoint id: "+p.id);ids.add(p.id)});
+j.links.forEach(l=>{if(!str(l.id)||li.has(l.id))e.push("Invalid or duplicate link id: "+l.id);li.add(l.id);if(!ids.has(l.src)||!ids.has(l.dst)||l.src==l.dst)e.push("Link "+l.id+" must join two distinct known endpoints.");
+["latencyCycles","transfers","errors","dropped"].forEach(k=>{if(l[k]!=null&&!(typeof l[k]=="number"&&l[k]>=0))e.push("Link "+l.id+": "+k+" must be a non-negative number or null.")})});
+if(j.events!=null&&!A(j.events))e.push("events must be an array.");return e.slice(0,8)}
+function loadSrc(){let j;try{j=JSON.parse($("#sj").value)}catch(x){S.se=["Not valid JSON: "+x.message];return render()}const er=validateSource(j);S.se=er;if(!er.length){j.events=j.events||[];S.src=j;S.sel=S.selN=null;toast("Snapshot loaded from "+j.source.name+" (unverified; not a live connection)")}render()}
+function srcPanel(){return`<div class="pn"><h2>Source snapshot (data contract v1)</h2><p class="mu">Paste JSON with schemaVersion, source {id, name, type}, timestamp, capabilities, endpoints[], links[] and events[]. Topology, measurements and events render from it for any size (max 64 endpoints, 256 links). Missing values show as unavailable. Loading a snapshot is not a live connection and never shows a LIVE badge.</p><textarea id="sj" rows="7" style="width:100%" class="mono" aria-label="Source snapshot JSON">${esc(S.sj||"")}</textarea><p class="err" role="alert">${(S.se||[]).map(esc).join("<br>")}</p><div class="bar"><button data-a="mock">Insert MOCK snapshot (6 chiplets)</button><button class="pr" data-a="lsrc">Validate and load</button><button data-a="csrc" ${S.src?"":"disabled"}>Clear source</button></div>${S.src?`<p>Loaded: ${esc(S.src.source.name)} (${S.src.endpoints.length} endpoints, ${S.src.links.length} links). View it under Hardware / Live Data.</p>`:""}</div>`}
+function liveSrc(page){const s=S.src,age=ago(s.timestamp),stale=age>30,u=v=>v==null?"unavailable":v,M=Object.fromEntries(s.links.map(l=>[l.id,l])),ok=v=>["healthy","suspected","faulted"].includes(v)?v:"unknown",
+net={EP:layout(s.endpoints.map(p=>p.id),"ring").map(p=>({...p,nm:s.endpoints.find(x=>x.id==p.id).name||p.id})),LK:s.links.map(l=>({id:l.id,s:l.src,d:l.dst})),st:id=>ok(M[id].state),an:id=>(M[id].errors||0)+(M[id].dropped||0),avg:id=>M[id].latencyCycles==null?4:M[id].latencyCycles,w:sz(s.endpoints.length)[0],h:sz(s.endpoints.length)[1],demo:false},
+bad=s.links.filter(l=>ok(l.state)!="healthy").length,
+h=`<h1>${esc(s.source.name)} <span class="bd suspected">${srcLabel()}</span> ${stale?'<span class="bd faulted">STALE</span>':'<span class="bd healthy">FRESH</span>'}</h1><p class="mu">Source ${esc(s.source.id)}; snapshot is ${age}s old (stale after 30s). Values come only from the loaded snapshot.</p>`;
+if(page=="diag")return h+`<div class="pn sc" style="margin-top:12px"><h2>Events (${s.events.length})</h2><table><tr><th>Time</th><th>ID</th><th>Link</th><th>Type</th><th>Severity</th><th>Expected</th><th>Observed</th></tr>${s.events.map(x=>`<tr><td>${u(x.timestamp)}</td><td>${esc(u(x.id))}</td><td>${esc(u(x.link))}</td><td>${esc(u(x.type))}</td><td>${esc(u(x.severity))}</td><td class="mono">${esc(u(x.expected))}</td><td class="mono">${esc(u(x.observed))}</td></tr>`).join("")||"<tr><td colspan=7 class=mu>The source reported no events.</td></tr>"}</table></div>`;
+return h+`<div class="kp" style="margin-top:12px">${kp("Endpoints",s.endpoints.length,"from source")}${kp("Links",s.links.length,"from source")}${kp("Not healthy",bad,"per source state")}${kp("Events",s.events.length,"from source")}</div><div class="g" style="grid-template-columns:minmax(0,2fr) minmax(280px,1fr)"><div class="pn">${page=="overview"?topo(null,false,net)+legend:`<div class="stage" style="height:480px"><div id="tvw" style="position:absolute;inset:0">${spatial(null,net)}</div>${tb3(false)}</div>`+legend}</div><div class="pn sc"><table><tr><th>Link</th><th>Path</th><th>State</th><th>Latency (cyc)</th><th>Transfers</th><th>Errors</th><th>Dropped</th></tr>${s.links.map(l=>`<tr><td>${esc(l.id)}</td><td>${esc(l.src)} â†’ ${esc(l.dst)}</td><td class="${ok(l.state)}">${ok(l.state)}</td><td>${u(l.latencyCycles)}</td><td>${u(l.transfers)}</td><td>${u(l.errors)}</td><td>${u(l.dropped)}</td></tr>`).join("")}</table></div></div>`}
+function selectObj(u){if(!u){S.sel=S.selN=null;return}if(u.l){S.sel=u.l;const k=LK.find(x=>x.id==u.l);if(S.selN&&k&&k.s!=S.selN&&k.d!=S.selN)S.selN=null}else{S.selN=u.n;const k=LK.find(x=>x.id==S.sel);if(k&&k.s!=u.n&&k.d!=u.n)S.sel=null}}
+function simState(){const e=cur();if(!e)return["unknown","unavailable"];const v=Object.values(e.L),f=v.some(m=>m.st=="faulted"),w=v.some(m=>m.st=="suspected");return f?["faulted","Faulted"]:w?["suspected","Suspected"]:["healthy","Healthy"]}
+const IC={overview:'<path d="M3 3h7v7H3zM14 3h7v4h-7zM14 10h7v11h-7zM3 13h7v8H3z"/>',topology:'<circle cx="5" cy="6" r="2"/><circle cx="19" cy="6" r="2"/><circle cx="12" cy="19" r="2"/><path d="M7 6h10M6 8l5 9M18 8l-5 9"/>',fault:'<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>',diag:'<path d="M3 12h4l3-8 4 16 3-8h4"/>',plan:'<circle cx="6" cy="5" r="2"/><circle cx="18" cy="12" r="2"/><circle cx="6" cy="19" r="2"/><path d="M8 5h6a4 4 0 014 4v1M8 19h6a4 4 0 004-4v-1"/>',exp:'<path d="M9 3h6M10 3v6L5 19a2 2 0 002 3h10a2 2 0 002-3l-5-10V3"/>',rep:'<path d="M6 2h9l5 5v15H6zM14 2v6h6M9 13h8M9 17h8"/>',set:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/>'};
+/* ---- render & events ---- */
+function render(){
+const hwFormState={};
+for(const id of ["hwWorkload","hwTarget","hwFaultType","hwFaultEnable","hwFaultMask","hwDelay","hwDrop","fbName","fbWorkload","fbTarget","fbFaultType","fbFaultEnable","fbMask","fbDelay","fbDrop","fbCompareA","fbCompareB"]){
+const el=document.getElementById(id);
+if(el)hwFormState[id]=el.type==="checkbox"?el.checked:el.value;
+}
+const d=S.mode=="demo";
+$("#hd").innerHTML=`<div class="brand"><svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><g stroke="var(--cy)" stroke-width="1.6" fill="none"><path d="M5 5H21V21H5ZM5 5L21 21"/></g><g fill="var(--bg)" stroke="var(--cy)" stroke-width="1.6"><circle cx="5" cy="5" r="3"/><circle cx="21" cy="5" r="3"/><circle cx="21" cy="21" r="3"/><circle cx="5" cy="21" r="3"/></g></svg><div>InterconnectSentry<small>Adaptive Chiplet Interconnect Diagnostics</small></div></div>${d?`<div class="fld"><small>Workspace</small>Demo Lab</div><div class="fld"><small>Experiment</small><select id="hx" data-a="cur" aria-label="Experiment">${S.exps.map(x=>`<option value="${x.id}" ${x.id==S.cur?"selected":""}>${x.id} ${esc(x.name)}</option>`).join("")}</select></div>${(x=>`<span class="bd ${x[0]}">Simulation: ${x[1]}</span>`)(simState())}<span class="bd ${S.running?"suspected":"unknown"}">${S.running?"RUNNING":"IDLE"}</span><select id="hq" aria-label="Scenario">${SC.map(x=>`<option value="${x.id}">${x.name}</option>`).join("")}</select><button class="pr" data-a="runh" ${S.running?"disabled":""}>Run</button><button data-a="reset" title="Reset demo data and re-run the healthy baseline">Reset</button><button data-a="z" data-v="0">Fit view</button>`:`<span class="mu">Workspace: Hardware / Live</span>`}${d?`<span class="bd demo">DEMO SIMULATION</span>`:`<span class="bd ${S.src?"suspected":"unknown"}">${S.src?srcLabel():(S.live.state=="connected"?"BACKEND CONNECTED":"SOURCE UNAVAILABLE")}</span>`}<div class="sw" role="group" aria-label="Operating mode"><button data-a="mode" data-v="demo" aria-pressed="${d}" ${S.running?"disabled title=\"Wait for the running experiment\"":""}>DEMO LAB</button><button data-a="mode" data-v="live" aria-pressed="${!d}" ${S.running?"disabled":""}>HARDWARE / LIVE DATA</button></div>`;
+const navPages=d?PG:PG.filter(([id])=>id!=="overview");$("#nv").innerHTML=navPages.map(([id,n])=>`<button data-a="go" data-v="${id}" ${S.page==id?'aria-current="page"':""}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[id]}</svg>${n}</button>`).join("");
+const e=cur(),fn={overview:pOverview,topology:pTopo,fault:pFault,diag:pDiag,plan:pPlan,exp:pExp,rep:pRep}[S.page];
+$("#view").innerHTML=S.page=="set"?pSet():d?fn(e):live(S.page);
+for(const [id,value] of Object.entries(hwFormState)){
+const el=document.getElementById(id);
+if(el){
+if(el.type==="checkbox")el.checked=value;
+else el.value=value;
+}
+}
+V3.on=!!$("#v3host");if(V3.on)mount3d();else if($("#tv")&&S.page!="overview")bindTopo()}
+function bindTopo(){const sv=$("#tv");sv.addEventListener("wheel",ev=>{ev.preventDefault();zoom(ev.deltaY<0?1.15:.87)},{passive:false});let dr=null;
+sv.addEventListener("pointerdown",ev=>{if(ev.target.closest(".lk,.nd"))return;dr={x:ev.clientX,y:ev.clientY};sv.setPointerCapture(ev.pointerId)});
+sv.addEventListener("pointermove",ev=>{if(!dr)return;const k=S.vb.w/sv.clientWidth;S.vb.x-=(ev.clientX-dr.x)*k;S.vb.y-=(ev.clientY-dr.y)*k;dr={x:ev.clientX,y:ev.clientY};sv.setAttribute("viewBox",`${S.vb.x} ${S.vb.y} ${S.vb.w} ${S.vb.h}`)});
+sv.addEventListener("pointerup",()=>dr=null)}
+function zoom(f){const v=S.vb,cx=v.x+v.w/2,cy=v.y+v.h/2;v.w/=f;v.h/=f;v.x=cx-v.w/2;v.y=cy-v.h/2;$("#tv").setAttribute("viewBox",`${v.x} ${v.y} ${v.w} ${v.h}`)}
+async function save(name,data){const d=window.claude&&await claude.use("downloads");if(!d){toast("Export is unavailable in this view; nothing was saved.");return}
+try{await d.save({filename:name,data});toast("Saved "+name)}catch(x){toast(x&&x.code=="declined"?"Export cancelled; nothing was saved.":"Export failed: "+((x&&x.message)||"unknown error"))}}
+function csv(e){const q=v=>'"'+String(v).replace(/"/g,'""')+'"',h=["event_id","experiment","source","scenario","seed","cycle","link","type","severity","expected","observed","latency_cycles"];
+return[h.join(",")].concat(e.ev.map(x=>[x.id,x.xid,e.source,e.name,e.seed,x.cyc,x.link,x.type,x.sev,x.exp,x.obs,x.lat==null?"":x.lat].map(q).join(","))).join("\n")}
+function act(a,v,el){const e=cur();
+if(a=="mode"){if(S.running||S.mode==v)return;S.mode=v;if(v=="live"&&S.page=="overview")S.page="topology";S.sel=S.selN=S.ev=null;toast(v=="demo"?"Source changed to DEMO SIMULATION":"Source changed to Hardware / Live Data: not connected")}
+else if(a=="go")S.page=v;else if(a=="run")return run(SC.find(s=>s.id==v));else if(a=="runsel")return run(SC.find(s=>s.id==$("#es").value));else if(a=="cust")return custom();else if(a=="cfm"){if(S.pend)run(S.pend);return}else if(a=="apply")return applyNet();else if(a=="addl")return addLink();else if(a=="rml")return rmLink();else if(a=="ren")return rename();else if(a=="preset"){$("#cp").value=v;return applyNet()}else if(a=="nstep"){$("#cn").value=Math.max(2,Math.min(MAXN,(parseInt($("#cn").value)||NET.n)+ +v));return applyNet()}else if(a=="vt"){S.vt=v;S.v3=v=="3d"}else if(a=="it"){S.it=v}else if(a=="dcmp"){S.dc={a:$("#cb").value,b:$("#cc").value}}else if(a=="rerun"){return run(cur().sc)}else if(a=="v3"){S.v3=!S.v3}else if(a=="pl"){S.pl=!S.pl}else if(a=="pr"){S.pr=!S.pr}else if(a=="runh")return run(SC.find(x=>x.id==$("#hq").value));else if(a=="alay"){EP=layout(EP.map(q=>q.id),NET.preset=="custom"?"ring":NET.preset).map((q,i)=>({...q,nm:EP[i].nm}));toast("Automatic layout applied")}else if(a=="mock"){S.sj=JSON.stringify(mockSnap(),null,2)}else if(a=="lsrc")return loadSrc();else if(a=="csrc"){S.src=null;S.sj="";S.se=[]}
+else if(a=="sl"){S.sel=v||null;S.selN=null;if(el.dataset.go)S.page=el.dataset.go}else if(a=="ev"){S.ev=v;S.page="diag"}
+else if(a=="z"){if(V3.on){v=="0"?V3.fit():V3.zoom(+v);return}if(v=="0")S.vb={x:0,y:0,w:800,h:560};else return zoom(+v)}
+else if(a=="cur")S.cur=el.value;else if(a=="rsel")S.rep=el.value;else if(a=="cmp"){el.checked?S.cmp.add(v):S.cmp.delete(v);}
+else if(a=="test"){const t=TESTS().find(t=>t.id==v);e.plan.push({id:v,fail:t.L.some(id=>e.L[id].an_>0)})}else if(a=="rst")e.plan=[];
+else if(a=="csv"){return save(e.id+"-events.csv",csv(S.page=="rep"?S.exps.find(x=>x.id==(S.rep||S.cur)):e))}
+else if(a=="json"){const r=S.exps.find(x=>x.id==(S.rep||S.cur));return save(r.id+"-report.json",JSON.stringify(report(r),null,2))}
+else if(a=="reset"){S.exps=[];S.cmp.clear();S.rep=null;runSim(SC[0]);toast("Demo data reset")}
+else if(a=="fpgaPlanRun")return runFpgaPlannerTest(v);else if(a=="runFpgaBench")return runFpgaBenchExperiment();else if(a=="compareFpgaBench")return compareFpgaBench();else if(a=="exportFpgaBenchCsv")return exportFpgaBench("csv");else if(a=="exportFpgaBenchJson")return exportFpgaBench("json");else if(a=="backendPreset")return applyBackendPreset(v);else if(a=="saveTopology")return saveBackendTopology();
+else if(a=="liveTarget"){S.live.target=v;S.live.state="idle";S.live.msg="";S.live.last=null;S.backendTopology=null;S.hardwareStatus=null}
+else if(a=="fpgaStatus")return refreshFpgaStatus();
+else if(a=="fpgaStart")return startFpga();
+else if(a=="fpgaStop")return stopFpga();
+else if(a=="disc"){S.live.state="idle";S.live.msg="";S.live.backendTopology=null;S.backendTopology=null;S.hardwareStatus=null}else if(a=="conn")return connect();
+render()}
+function applyBackendPreset(preset){
+const current=S.backendTopology;
+if(!current||!Array.isArray(current.endpoints))return toast("Load backend topology first.");
+
+const endpoints=current.endpoints.map(p=>({...p}));
+const n=endpoints.length;
+if(n<2)return toast("At least two endpoints are required.");
+
+if(preset==="full"&&n>8)return toast("Fully connected is limited to 8 endpoints.");
+
+const pairs=[];
+if(preset==="ring"){
+for(let i=0;i<n;i++)pairs.push([i,(i+1)%n]);
+}else if(preset==="star"){
+for(let i=1;i<n;i++)pairs.push([0,i]);
+}else if(preset==="full"){
+for(let i=0;i<n;i++)for(let j=i+1;j<n;j++)pairs.push([i,j]);
+}else if(preset==="mesh"){
+const cols=Math.ceil(Math.sqrt(n));
+for(let i=0;i<n;i++){
+if(i%cols<cols-1&&i+1<n)pairs.push([i,i+1]);
+if(i+cols<n)pairs.push([i,i+cols]);
+}
+}else return toast("Unknown topology preset.");
+
+const oldLinks=current.links||[];
+const width=oldLinks[0]?.widthBits??32;
+const clock=oldLinks[0]?.clockMHz??500;
+
+const links=pairs.map(([a,b],i)=>({
+id:"L"+(i+1),
+source:endpoints[a].id,
+destination:endpoints[b].id,
+widthBits:width,
+clockMHz:clock
+}));
+
+const topology={
+schemaVersion:1,
+source:"backend",
+endpoints,
+links
+};
+
+const editor=$("#backendTopologyEditor");
+if(editor)editor.value=JSON.stringify(topology,null,2);
+
+S.backendTopology=topology;
+toast(preset.toUpperCase()+" topology generated. Saving to backend...");
+return saveBackendTopology();
+}
+async function saveBackendTopology(){
+const L=S.live;
+if(L.state!=="connected"||!S.backendTopology){
+toast("Connect to the backend before saving.");
+return;
+}
+const editor=$("#backendTopologyEditor");
+if(!editor){
+toast("Topology editor not found.");
+return;
+}
+let topology;
+try{
+topology=JSON.parse(editor.value);
+}catch(x){
+toast("Invalid JSON: "+x.message);
+return;
+}
+if(!topology||topology.schemaVersion!==1||
+   !Array.isArray(topology.endpoints)||!Array.isArray(topology.links)||
+   topology.endpoints.length<2||topology.links.length<1){
+toast("Invalid topology: schemaVersion 1, at least two endpoints and one link are required.");
+return;
+}
+const endpointIds=topology.endpoints.map(p=>p&&p.id);
+const linkIds=topology.links.map(l=>l&&l.id);
+if(endpointIds.some(id=>typeof id!=="string"||!id.trim())||
+   new Set(endpointIds).size!==endpointIds.length){
+toast("Endpoint IDs must be non-empty and unique.");
+return;
+}
+if(linkIds.some(id=>typeof id!=="string"||!id.trim())||
+   new Set(linkIds).size!==linkIds.length){
+toast("Link IDs must be non-empty and unique.");
+return;
+}
+const endpointSet=new Set(endpointIds);
+if(topology.links.some(l=>
+   !l||!endpointSet.has(l.source)||!endpointSet.has(l.destination)||
+   l.source===l.destination)){
+toast("Every link must connect two different existing endpoints.");
+return;
+}
+topology.source="backend";
+const controller=new AbortController();
+const timeout=setTimeout(()=>controller.abort(),8000);
+try{
+const base=L.url.replace(/\/+$/,"");
+const response=await fetch(base+"/topology",{
+method:"PUT",
+credentials:"omit",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify(topology),
+signal:controller.signal
+});
+const result=await response.json();
+if(!response.ok){
+throw new Error(result.detail||"HTTP "+response.status);
+}
+S.backendTopology=result;
+L.last=new Date().toISOString();
+L.msg="";
+toast("Saved to backend: "+result.endpoints.length+" endpoints and "+result.links.length+" links.");
+render();
+}catch(x){
+L.msg="Topology save failed: "+(x&&x.message||"unknown error");
+toast(L.msg);
+render();
+}finally{
+clearTimeout(timeout);
+}
+}
+async function refreshFpgaStatus(){
+if(S.live.state!=="connected"||S.live.target!=="fpga"){
+toast("Connect to the PYNQ-Z2 target first.");
+return;
+}
+if(S.hardwareBusy)return;
+S.hardwareBusy=true;
+render();
+try{
+S.hardwareStatus=await backendApi("/hardware/status");
+S.live.last=new Date().toISOString();
+S.live.msg="";
+}catch(x){
+S.live.msg="FPGA status read failed: "+x.message;
+toast(S.live.msg);
+}finally{
+S.hardwareBusy=false;
+render();
+}
+}
+async function startFpga(){
+if(S.live.state!=="connected"||S.live.target!=="fpga"){
+toast("Connect to the PYNQ-Z2 target first.");
+return;
+}
+if(S.hardwareBusy)return;
+const number=id=>Number(document.getElementById(id).value);
+const maskText=document.getElementById("hwFaultMask").value.trim();
+const mask=Number.parseInt(maskText,0);
+const payload={
+workload:number("hwWorkload"),
+target_link:number("hwTarget"),
+fault_type:number("hwFaultType"),
+fault_enable:document.getElementById("hwFaultEnable").checked,
+fault_mask:mask,
+delay_cycles:number("hwDelay"),
+drop_interval:number("hwDrop")
+};
+if(!Number.isInteger(mask)||mask<0||mask>0xFFFFFFFF){
+toast("Fault mask must be an integer from 0 to 0xFFFFFFFF.");
+return;
+}
+if(!Number.isInteger(payload.workload)||payload.workload<1||payload.workload>65535||
+!Number.isInteger(payload.target_link)||payload.target_link<0||payload.target_link>15||
+!Number.isInteger(payload.fault_type)||payload.fault_type<0||payload.fault_type>3||
+!Number.isInteger(payload.delay_cycles)||payload.delay_cycles<0||payload.delay_cycles>255||
+!Number.isInteger(payload.drop_interval)||payload.drop_interval<0||payload.drop_interval>255){
+toast("Check the workload and fault configuration limits.");
+return;
+}
+S.hardwareBusy=true;
+render();
+try{
+await backendApi("/hardware/start",{method:"POST",body:JSON.stringify(payload)});
+toast("Workload start command sent to the FPGA.");
+S.hardwareStatus=await backendApi("/hardware/status");
+S.live.last=new Date().toISOString();
+S.live.msg="";
+}catch(x){
+S.live.msg="FPGA start failed: "+x.message;
+toast(S.live.msg);
+}finally{
+S.hardwareBusy=false;
+render();
+}
+}
+async function stopFpga(){
+if(S.live.state!=="connected"||S.live.target!=="fpga"){
+toast("Connect to the PYNQ-Z2 target first.");
+return;
+}
+if(S.hardwareBusy)return;
+S.hardwareBusy=true;
+render();
+try{
+await backendApi("/hardware/stop",{method:"POST",body:"{}"});
+toast("Stop command sent to the FPGA.");
+S.hardwareStatus=await backendApi("/hardware/status");
+S.live.last=new Date().toISOString();
+S.live.msg="";
+}catch(x){
+S.live.msg="FPGA stop failed: "+x.message;
+toast(S.live.msg);
+}finally{
+S.hardwareBusy=false;
+render();
+}
+}
+async function connect(){
+const L=S.live;
+L.url=$("#lu").value.trim();
+let u;
+try{u=new URL(L.url)}catch(_){
+L.msg="Enter a full URL such as http://127.0.0.1:8000/api/v1.";
+return render()
+}
+if(!/^https?:$/.test(u.protocol)||u.username||u.password){
+L.msg="Use an http(s) URL without embedded credentials.";
+return render()
+}
+L.state="connecting";
+L.msg="";
+S.backendTopology=null;
+render();
+
+const c=new AbortController();
+const t=setTimeout(()=>c.abort(),6000);
+try{
+const base=L.url.replace(/\/+$/,"");
+const options={signal:c.signal,credentials:"omit"};
+
+const healthResponse=await fetch(base+"/health",options);
+if(!healthResponse.ok)throw new Error("Health check HTTP "+healthResponse.status);
+const health=await healthResponse.json();
+if(health.status!=="ok")throw new Error("Unexpected health response");
+
+const topologyResponse=await fetch(base+"/topology",options);
+if(!topologyResponse.ok)throw new Error("Topology HTTP "+topologyResponse.status);
+const topology=await topologyResponse.json();
+
+if(topology.schemaVersion!==1||
+   !Array.isArray(topology.endpoints)||
+   !Array.isArray(topology.links)||
+   topology.endpoints.length<2||
+   topology.links.length<1){
+throw new Error("Invalid backend topology response");
+}
+
+const endpointIds=new Set(topology.endpoints.map(p=>p.id));
+if(topology.links.some(l=>
+   !l.id||!endpointIds.has(l.source)||!endpointIds.has(l.destination)||
+   l.source===l.destination)){
+throw new Error("Backend topology contains invalid link references");
+}
+
+const hardwareStatus=L.target==="fpga"?await backendApi("/hardware/status"):null;
+S.hardwareStatus=hardwareStatus;
+S.backendTopology=topology;
+L.state="connected";
+L.last=new Date().toISOString();
+L.msg="";
+toast(L.target==="fpga"
+?"Connected to FastAPI and PYNQ-Z2 hardware bridge."
+:"Connected: "+topology.endpoints.length+" endpoints and "+topology.links.length+" links loaded.");
+}
+catch(x){
+S.backendTopology=null;
+S.hardwareStatus=null;
+L.state="error";
+L.msg="Connection failed: "+(x&&x.message||"unreachable")+". No backend topology loaded.";
+}
+finally{
+clearTimeout(t);
+render();
+}
+}
+document.addEventListener("click",ev=>{const l=ev.target.closest(".lk"),n=ev.target.closest(".nd"),r=ev.target.closest("tr[data-e]");
+if(l){selectObj({l:l.dataset.l});return render()}if(n){selectObj({n:n.dataset.n});return render()}if(r){S.ev=r.dataset.e;return render()}
+const b=ev.target.closest("[data-a]");if(b&&!/^(SELECT|INPUT)$/.test(b.tagName)||b&&b.type=="checkbox")act(b.dataset.a,b.dataset.v,b)});
+document.addEventListener("change",ev=>{const b=ev.target;if(b.matches("select[data-a]"))act(b.dataset.a,b.value,b);else if(b.type=="checkbox"&&b.dataset.a)act(b.dataset.a,b.dataset.v,b);else if(b.id=="fsv"||b.id=="fty"||b.id=="fli"){S.f.sev=$("#fsv").value;S.f.typ=$("#fty").value;S.f.lnk=$("#fli").value;$("#evt").innerHTML=evRows(cur())}});
+document.addEventListener("input",ev=>{const i_=ev.target.id;if(i_=="sj")S.sj=ev.target.value;if(i_=="tq"||i_=="tsf"){S.q=$("#tq").value;S.sf=$("#tsf").value;redrawTopo();return}if(ev.target.id=="fq"){S.f.q=ev.target.value;$("#evt").innerHTML=evRows(cur())}});
+document.addEventListener("keydown",ev=>{if(ev.key=="Enter"||ev.key==" "){const g=ev.target.closest&&ev.target.closest(".lk,.nd");if(g){ev.preventDefault();g.dispatchEvent(new MouseEvent("click",{bubbles:true}))}}});
+runSim(SC[0]);render();
+</script></body></html>

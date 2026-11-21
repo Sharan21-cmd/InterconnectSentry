@@ -1,0 +1,63 @@
+﻿# Python environments
+.venv/
+venv/
+env/
+
+# Python cache
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+
+# Secrets and environment configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+credentials/
+
+# Generated outputs
+*.log
+*.bit
+*.bin
+*.ltx
+*.jou
+*.str
+*.wdb
+*.vcd
+*.fst
+
+# Editor and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.bak
+*~
+
+# Local backups
+*.before-*
+*.backup
+*.bak
+
+# Local runtime database
+backend/data/*.sqlite3
+backend/data/*.db
+
+# Generated hardware build outputs
+hardware/build/
+hardware/output/
+
+# All temporary source backups
+*.before*
+*.bak
+
+# Additional frontend patch backups
+*.bak
+*.link-health-patch-backup
+*.topology-backup
